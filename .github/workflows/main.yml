@@ -1,0 +1,9 @@
+name: Infra deploymment
+on:
+  push:
+    branches:
+      - dev
+      - staging
+      - prod
+
+jobs:
