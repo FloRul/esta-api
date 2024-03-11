@@ -27,18 +27,21 @@ provider "aws" {
   }
 }
 
-# module "prompt_management" {
-#   source       = "github.com/FloRul/terraform-aws-esta-pms"
-#   environment  = var.environment
-#   project_name = var.project_name
-#   aws_region   = var.aws_region
-# }
-
-module "esta_api" {
-  source                 = "../../modules/api"
-  project_name           = var.project_name
-  environment            = var.environment
-  aws_region             = var.aws_region
-  cognito_user_pool_arns = [""]
-  integrations           = []
+module "prompt_management" {
+  source       = "github.com/FloRul/terraform-aws-esta-pms"
+  environment  = var.environment
+  project_name = var.project_name
+  aws_region   = var.aws_region
 }
+
+# module "esta_api" {
+#   depends_on             = [module.prompt_management]
+#   source                 = "../../modules/api"
+#   project_name           = var.project_name
+#   environment            = var.environment
+#   aws_region             = var.aws_region
+#   cognito_user_pool_arns = var.cognito_user_pool_arns
+#   integrations = [
+
+#   ]
+# }

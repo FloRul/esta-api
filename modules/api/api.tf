@@ -6,18 +6,20 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
 resource "aws_api_gateway_rest_api" "this" {
   name = "${var.project_name}-api-${var.environment}"
   body = jsonencode({
-    openapi = "3.0.0",
+    openapi = "3.0.1",
     info = {
-      title   = "${var.project_name}-api-${var.environment}"
-      version = "1.0"
+      title       = "${var.project_name}-api-${var.environment}"
+      description = "API for ${var.project_name} in ${var.environment}"
+      version     = "1.0"
     },
     paths = {
-      "/" = {
-        get = {
-          responses = {
-            default = {
-              description = "Default response"
-            }
+      for integration in var.integrations : integration.path => {
+        (integration.method) = {
+          "x-amazon-apigateway-integration" = {
+            uri                 = integration.uri
+            passthroughBehavior = "when_no_match"
+            httpMethod          = integration.method
+            type                = "aws_proxy"
           }
         }
       }

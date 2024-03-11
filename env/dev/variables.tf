@@ -15,3 +15,13 @@ variable "project_name" {
   type        = string
   nullable    = false
 }
+
+variable "cognito_user_pool_arns" {
+  description = "The ARNs of the Cognito User Pools"
+  type        = list(string)
+  nullable    = false
+  validation {
+    condition     = can(var.cognito_user_pool_arns)
+    error_message = "The Cognito User Pool ARNs must be provided"
+  }
+}
