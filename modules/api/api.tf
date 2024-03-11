@@ -33,7 +33,7 @@ resource "aws_api_gateway_deployment" "this" {
     create_before_destroy = true
   }
   triggers = {
-    redeployment = timestamp()
+    redeployment = sha256(jsonencode(aws_api_gateway_rest_api.this.body))
   }
   rest_api_id = aws_api_gateway_rest_api.this.id
 }
