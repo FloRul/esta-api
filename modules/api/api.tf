@@ -5,6 +5,24 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
 
 resource "aws_api_gateway_rest_api" "this" {
   name = var.api_name
+  body = jsonencode({
+    openapi = "3.0.0",
+    info = {
+      title   = var.api_name
+      version = "1.0"
+    },
+    paths = {
+      "/" = {
+        get = {
+          responses = {
+            default = {
+              description = "Default response"
+            }
+          }
+        }
+      }
+    }
+  })
 }
 
 resource "aws_api_gateway_deployment" "this" {

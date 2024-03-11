@@ -10,8 +10,8 @@ variable "aws_region" {
   nullable    = false
 }
 
-variable "api_name" {
-  description = "The name of the API Gateway"
+variable "project_name" {
+  description = "The name of the project"
   type        = string
   nullable    = false
 }

@@ -26,21 +26,6 @@ variable "api_log_retention_in_days" {
   }
 }
 
-variable "api_authorizers" {
-  description = "The authorizer for the API Gateway"
-  type        = Any
-}
-
-variable "api_integrations" {
-  description = "The integrations for the API Gateway"
-  type        = Any
-  nullable    = false
-  validation {
-    condition     = can(var.api_integrations)
-    error_message = "The API integrations must be provided"
-  }
-}
-
 variable "cognito_user_pool_arns" {
   description = "The ARNs of the Cognito User Pools"
   type        = list(string)
@@ -49,4 +34,15 @@ variable "cognito_user_pool_arns" {
     condition     = can(var.cognito_user_pool_arns)
     error_message = "The Cognito User Pool ARNs must be provided"
   }
+}
+
+variable "integrations" {
+  description = "The integrations for the API Gateway"
+  type = list(object({
+    path_part   = string
+    http_method = string
+    lambda_arn  = string
+  }))
+
+  nullable = true
 }

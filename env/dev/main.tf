@@ -1,10 +1,10 @@
 terraform {
   backend "s3" {
     bucket = "esta-config-storage"
-    key = "env/dev/main.tfstate"
+    key    = "env/dev/main.tfstate"
     region = "ca-central-1"
   }
-    required_providers {
+  required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
@@ -22,7 +22,23 @@ provider "aws" {
     tags = {
       Environment = var.environment
       Terraform   = "true"
-      Project     = "levio-aws-demo-fev-dev"
+      Project     = var.project_name
     }
   }
+}
+
+# module "prompt_management" {
+#   source       = "github.com/FloRul/terraform-aws-esta-pms"
+#   environment  = var.environment
+#   project_name = var.project_name
+#   aws_region   = var.aws_region
+# }
+
+module "esta_api" {
+  source                 = "../../modules/api"
+  cognito_user_pool_arns = [""]
+  environment            = var.environment
+  api_name               = "${var.project_name}-api-${var.environment}"
+  aws_region             = var.aws_region
+  integrations           = []
 }
