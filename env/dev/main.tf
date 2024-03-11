@@ -43,9 +43,21 @@ module "esta_api" {
   cognito_user_pool_arns = var.cognito_user_pool_arns
   integrations = [
     {
-      path_part   = "templates"
-      http_method = "GET"
-      lambda_arn  = module.prompt_management.get_templates_lambda_arn
-    }
+      path_part = "templates"
+      details = [
+        {
+          http_method = "GET"
+          lambda_arn  = module.prompt_management.get_templates_lambda_arn
+        },
+        {
+          http_method = "POST"
+          lambda_arn  = module.prompt_management.post_template_lambda_arn
+        },
+        {
+          http_method = "DELETE"
+          lambda_arn  = module.prompt_management.delete_template_lambda_arn
+        }
+      ]
+    },
   ]
 }

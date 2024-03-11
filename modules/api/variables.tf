@@ -37,12 +37,13 @@ variable "cognito_user_pool_arns" {
 }
 
 variable "integrations" {
-  description = "The integrations for the API Gateway"
+  description = "The integrations for the API Gateway (only the path)"
   type = list(object({
-    path_part   = string
-    http_method = string
-    lambda_arn  = string
+    path_part = string
+    details = list(object({
+      http_method = string
+      lambda_arn  = string
+    }))
   }))
-
   nullable = true
 }
