@@ -13,12 +13,12 @@ resource "aws_api_gateway_rest_api" "this" {
       version     = "1.0"
     },
     paths = {
-      for integration in var.integrations : integration.path => {
-        (integration.method) = {
+      for integration in var.integrations : integration.path_part => {
+        (integration.http_method) = {
           "x-amazon-apigateway-integration" = {
-            uri                 = integration.uri
+            uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${integration.lambda_arn}/invocations"
             passthroughBehavior = "when_no_match"
-            httpMethod          = integration.method
+            httpMethod          = integration.http_method
             type                = "aws_proxy"
           }
         }
@@ -28,12 +28,12 @@ resource "aws_api_gateway_rest_api" "this" {
 }
 
 resource "aws_api_gateway_deployment" "this" {
-  description = "Deployment for ${timestamp()}"
+  depends_on = [aws_api_gateway_rest_api.this]
   lifecycle {
     create_before_destroy = true
   }
   triggers = {
-    redeployment = timestamp()
+    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.this.body))
   }
   rest_api_id = aws_api_gateway_rest_api.this.id
 }
