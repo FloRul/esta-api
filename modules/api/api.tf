@@ -1,14 +1,14 @@
 resource "aws_cloudwatch_log_group" "api_gateway" {
-  name = "apigateway-${var.api_name}-${var.environment}"
+  name = "apigateway-${var.project_name}-${var.environment}"
   retention_in_days = var.api_log_retention_in_days
 }
 
 resource "aws_api_gateway_rest_api" "this" {
-  name = var.api_name
+  name = "${var.project_name}-api-${var.environment}"
   body = jsonencode({
     openapi = "3.0.0",
     info = {
-      title   = var.api_name
+      title   = "${var.project_name}-api-${var.environment}"
       version = "1.0"
     },
     paths = {
@@ -43,12 +43,12 @@ resource "aws_api_gateway_stage" "this" {
 }
 
 resource "aws_api_gateway_api_key" "this" {
-  name = "${var.api_name}-key"
+  name = "${var.project_name}-key-${var.environment}"
 }
 
 ## Auth and Authorizer
 resource "aws_api_gateway_authorizer" "this" {
-  name          = "${var.api_name}-authorizer-${var.environment}"
+  name          = "${var.project_name}-authorizer-${var.environment}"
   rest_api_id   = aws_api_gateway_rest_api.this.id
   type          = "COGNITO_USER_POOLS"
   provider_arns = var.cognito_user_pool_arns
@@ -61,7 +61,7 @@ resource "aws_api_gateway_account" "this" {
 }
 
 resource "aws_iam_role" "this" {
-  name = "${var.api_name}-role-${var.environment}"
+  name = "${var.project_name}-api-role-${var.environment}"
 
   assume_role_policy = <<POLICY
 {
