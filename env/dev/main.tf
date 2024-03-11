@@ -36,9 +36,9 @@ provider "aws" {
 
 module "esta_api" {
   source                 = "../../modules/api"
-  cognito_user_pool_arns = [""]
+  project_name           = var.project_name
   environment            = var.environment
   aws_region             = var.aws_region
+  cognito_user_pool_arns = [""]
   integrations           = []
-  project_name           = var.project_name
 }
