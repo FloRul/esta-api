@@ -28,7 +28,7 @@ provider "aws" {
 }
 
 module "prompt_management" {
-  source       = "github.com/FloRul/terraform-aws-esta-pms"
+  source       = "../../modules/template_management"
   environment  = var.environment
   project_name = var.project_name
   aws_region   = var.aws_region
@@ -45,7 +45,7 @@ module "esta_api" {
     {
       path_part   = "templates"
       http_method = "GET"
-      lambda_arn  = module.prompt_management.get_template_lambda_arn
+      lambda_arn  = module.prompt_management.get_templates_lambda_arn
     }
   ]
 }
