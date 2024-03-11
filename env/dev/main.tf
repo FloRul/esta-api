@@ -34,14 +34,18 @@ module "prompt_management" {
   aws_region   = var.aws_region
 }
 
-# module "esta_api" {
-#   depends_on             = [module.prompt_management]
-#   source                 = "../../modules/api"
-#   project_name           = var.project_name
-#   environment            = var.environment
-#   aws_region             = var.aws_region
-#   cognito_user_pool_arns = var.cognito_user_pool_arns
-#   integrations = [
-
-#   ]
-# }
+module "esta_api" {
+  depends_on             = [module.prompt_management]
+  source                 = "../../modules/api"
+  project_name           = var.project_name
+  environment            = var.environment
+  aws_region             = var.aws_region
+  cognito_user_pool_arns = var.cognito_user_pool_arns
+  integrations = [
+    {
+      path_part   = "templates"
+      http_method = "GET"
+      lambda_arn  = module.prompt_management.get_template_lambda_arn
+    }
+  ]
+}
