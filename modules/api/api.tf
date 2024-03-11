@@ -58,10 +58,6 @@ resource "aws_api_gateway_authorizer" "this" {
 ## Logging
 resource "aws_api_gateway_account" "this" {
   cloudwatch_role_arn = aws_iam_role.this.arn
-  throttle_settings {
-    burst_limit = 50
-    rate_limit  = 100
-  }
 }
 
 resource "aws_iam_role" "this" {
