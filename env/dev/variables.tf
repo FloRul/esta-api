@@ -16,6 +16,8 @@ variable "project_name" {
   nullable    = false
 }
 
+## Api settings
+
 variable "cognito_user_pool_arns" {
   description = "The ARNs of the Cognito User Pools"
   type        = list(string)
@@ -25,3 +27,6 @@ variable "cognito_user_pool_arns" {
     error_message = "The Cognito User Pool ARNs must be provided"
   }
 }
+
+## Vectorstore settings
+

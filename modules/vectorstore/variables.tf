@@ -8,15 +8,26 @@ variable "environment" {
   }
 }
 
-## Network settings
-variable "vpc_security_group_ids" {
-  description = "The IDs of the security groups associated with the RDS instance"
-  type        = set(string)
+variable "project_name" {
+  description = "The name of the project in which the RDS instance is being created"
+  type        = string
+  nullable    = false
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.project_name))
+    error_message = "The project name must be a lowercase string with no spaces"
+  }
 }
+
+## Network settings
 
 variable "db_subnet_group_name" {
   description = "The name of the DB subnet group to associate with the RDS instance"
   type        = string
+}
+
+variable "rds_sg_ids" {
+  description = "The IDs of the security groups associated with the RDS instance"
+  type        = set(string)
 }
 
 variable "admin_subnet_id" {
@@ -24,6 +35,10 @@ variable "admin_subnet_id" {
   type        = string
 }
 
+variable "bastion_sg_ids" {
+  description = "The IDs of the security groups associated with the bastion instance"
+  type        = set(string)
+}
 
 ## Storage settings
 variable "allocated_storage" {
@@ -71,12 +86,6 @@ variable "instance_class" {
   }
 }
 
-variable "db_identifier" {
-  description = "The identifier for the RDS instance"
-  type        = string
-  default     = "embedding-vectorstore"
-}
-
 variable "db_port" {
   description = "The port on which the RDS instance will listen"
   type        = number
@@ -84,26 +93,6 @@ variable "db_port" {
   validation {
     condition     = var.db_port >= 1024 && var.db_port <= 65535
     error_message = "The port must be a valid TCP port number"
-  }
-}
-
-variable "db_admin_user" {
-  description = "The username for the RDS instance admin user"
-  type        = string
-  default     = "admin_user"
-  validation {
-    condition     = can(regex("^[a-z0-9_]+$", var.db_admin_user))
-    error_message = "The admin username must be a lowercase string with no spaces"
-  }
-}
-
-variable "db_name" {
-  description = "The name of the database to create on the RDS instance"
-  type        = string
-  default     = "vectorstore"
-  validation {
-    condition     = can(regex("^[a-z0-9_]+$", var.db_name))
-    error_message = "The database name must be a lowercase string with no spaces"
   }
 }
 

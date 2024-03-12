@@ -6,25 +6,28 @@ data "aws_ami_ids" "amazon_linux" {
   }
 }
 
+resource "aws_iam_instance_profile" "bastion_profile" {
+  name = "${var.project_name}-${var.environment}-bastion-profile"
+  role = aws_iam_role.bastion_role.name
+}
+
 resource "aws_instance" "bastion" {
   ami           = data.aws_ami_ids.amazon_linux.ids[0]
   instance_type = "t2.micro"
 
-  vpc_security_group_ids = [aws_security_group.bastion.id]
-  subnet_id              = var.admin_subnet_id
-  # No public IP assignment (bastion won't be directly accessible)
+  vpc_security_group_ids      = var.bastion_sg_ids
+  subnet_id                   = var.admin_subnet_id
   associate_public_ip_address = false
-}
-
-resource "aws_security_group" "bastion" {
-  name = "bastion-sg"
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"          # Deny all public access
-    cidr_blocks = ["0.0.0.0/0"] # Replace with actual range
+  iam_instance_profile        = aws_iam_instance_profile.bastion_profile.name
+  tags = {
+    Name = "${var.project_name}-${var.environment}-bastion"
   }
+  user_data = <<-EOF
+#!/bin/bash
+yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
+EOF
 }
 
 resource "aws_iam_role" "bastion_role" {
@@ -46,7 +49,12 @@ resource "aws_iam_role" "bastion_role" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "bastion_role_policy" {
+resource "aws_iam_role_policy_attachment" "bastion_role_policy_ssm" {
   role       = aws_iam_role.bastion_role.id
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "bastion_role_policy_ssm_default" {
+  role       = aws_iam_role.bastion_role.id
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedEC2InstanceDefaultPolicy"
 }

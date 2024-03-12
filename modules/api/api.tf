@@ -33,8 +33,8 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_lambda_permission" "apigw" {
   for_each = {
-    for integration in flatten([for integration in var.integrations : integration.details]) :
-    "${integration.http_method}-${integration.lambda_arn}" => {
+    for idx, integration in flatten([for integration in var.integrations : integration.details]) :
+    "${idx}" => {
       http_method = integration.http_method
       lambda_arn  = integration.lambda_arn
     }

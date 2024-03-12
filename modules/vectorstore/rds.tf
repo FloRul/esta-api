@@ -1,6 +1,6 @@
 resource "aws_db_instance" "vectorstore" {
   ## Network settings
-  vpc_security_group_ids = var.vpc_security_group_ids
+  vpc_security_group_ids = var.rds_sg_ids
   db_subnet_group_name   = var.db_subnet_group_name
 
   ## RDS instance settings
@@ -14,8 +14,8 @@ resource "aws_db_instance" "vectorstore" {
   instance_class = var.instance_class
 
   ## RDS instance configuration
-  identifier          = "${var.db_identifier}-${var.environment}"
-  username            = "${var.db_admin_user}-${var.environment}"
+  identifier          = "${var.project_name}-vectorstore-id-${var.environment}"
+  username            = "${var.project_name}${var.environment}admin"
   publicly_accessible = false
   port                = var.db_port
 
@@ -26,13 +26,13 @@ resource "aws_db_instance" "vectorstore" {
   performance_insights_enabled = true
   apply_immediately            = true
   parameter_group_name         = aws_db_parameter_group.default.name
-  db_name                      = "${var.db_name}-${var.environment}"
+  db_name                      = "${var.project_name}vectorstore${upper(var.environment)}"
 
   ## KMS settings
   manage_master_user_password   = true
   master_user_secret_kms_key_id = aws_kms_key.vectorstore_encryption_key.key_id
 
-  kms_key_id        = aws_kms_key.vectorstore_encryption_key.key_id
+  kms_key_id        = aws_kms_key.vectorstore_encryption_key.arn
   storage_encrypted = true
 
   ## timeouts
@@ -44,7 +44,7 @@ resource "aws_db_instance" "vectorstore" {
 }
 
 resource "aws_db_parameter_group" "default" {
-  name   = "rds-pg"
+  name   = "${var.project_name}-vectorstore-pg-${var.environment}"
   family = "postgres15"
 
   parameter {

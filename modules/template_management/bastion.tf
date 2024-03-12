@@ -28,16 +28,16 @@
 #   role = aws_iam_role.ssm_role.name
 # }
 
-# resource "aws_instance" "jumpbox" {
+# resource "aws_instance" "bastion" {
 #   ami                         = data.aws_ami.latest_amazon_linux.id
-#   instance_type               = var.jumpbox_instance_type
+#   instance_type               = var.bastion_instance_type
 #   key_name                    = "bastion-rds-dev"
 #   subnet_id                   = module.vpc.public_subnets[0]
-#   vpc_security_group_ids      = [aws_security_group.jumpbox_sg.id]
+#   vpc_security_group_ids      = [aws_security_group.bastion_sg.id]
 #   associate_public_ip_address = true
 #   iam_instance_profile        = aws_iam_instance_profile.ssm_instance_profile.name
 
 #   tags = {
-#     Name = "jumpbox-instance-dev"
+#     Name = "bastion-instance-dev"
 #   }
 # }
