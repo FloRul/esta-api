@@ -13,6 +13,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -28,7 +29,7 @@ jobs:
         run: |
           aws ecr describe-repositories --repository-names ${{ vars.INFERENCE_CHAT_ECR }} || \
           aws ecr create-repository --repository-name ${{ vars.INFERENCE_CHAT_ECR }} && \
-          LIFECYCLE_POLICY=$(cat ./env/dev/setting/ecr_policy.json) && \
+          LIFECYCLE_POLICY=$(cat ./env/dev/settings/ecr_policy.json) && \
           aws ecr put-lifecycle-policy --repository-name ${{ vars.INFERENCE_CHAT_ECR }} --lifecycle-policy-text "$LIFECYCLE_POLICY"
 
       - name: Build, tag, and push image to Amazon ECR
@@ -43,12 +44,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
+        run: python -m pip install --upgrade pip
+      
       - name: Create Python alias
-        run: |
-          echo 'alias python3.11="/usr/bin/python3.11"' >> $GITHUB_ENV
+        run: echo 'alias python3.11="/usr/bin/python3.11"' >> $GITHUB_ENV
+      
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
