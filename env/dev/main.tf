@@ -100,15 +100,16 @@ module "vectorstore" {
   bastion_state     = var.bastion_state
 }
 
-# module "inference_chat" {
-#   source = "../../modules/inference/chat"
+module "inference_chat" {
+  source = "../../modules/inference/chat"
 
-#   environment  = var.environment
-#   aws_region   = var.aws_region
-#   project_name = var.project_name
+  environment  = var.environment
+  aws_region   = var.aws_region
+  project_name = var.project_name
 
-#   lambda_sg_ids     = [module.vpc.vpc_sg_ids.lambda_sg]
-#   lambda_subnet_ids = module.vpc.public_subnets
+  lambda_sg_ids     = [module.vpc.vpc_sg_ids.lambda_sg]
+  lambda_subnet_ids = module.vpc.public_subnets
 
-#   rds_instance_config = module.vectorstore.rds_instance_config
-# }
+  rds_instance_config    = module.vectorstore.rds_instance_config
+  lambda_repository_name = var.inference_chat_repository_name
+}
