@@ -28,11 +28,10 @@ variable "lambda_subnet_ids" {
 
 variable "rds_instance_config" {
   type = object({
-    db_host             = string
-    db_port             = number
-    db_name             = string
-    db_user             = string
-    db_pass_secret_name = string
+    db_host            = string
+    db_port            = number
+    db_name            = string
+    db_pass_secret_arn = string
   })
   nullable = false
 }

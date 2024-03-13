@@ -39,6 +39,7 @@ module "lambda_storage" {
   versioning = {
     enabled = false
   }
+  force_destroy = true
 }
 
 module "template_management" {
@@ -90,8 +91,8 @@ module "vectorstore" {
   project_name = var.project_name
   environment  = var.environment
 
-  rds_sg_ids           = [module.vpc.vpc_sg_ids["database_sg"]]
-  bastion_sg_ids       = [module.vpc.vpc_sg_ids["bastion_sg"]]
+  rds_sg_ids           = [module.vpc.vpc_sg_ids.database_sg]
+  bastion_sg_ids       = [module.vpc.vpc_sg_ids.bastion_sg]
   db_subnet_group_name = module.vpc.db_subnet_group_name
   admin_subnet_id      = module.vpc.private_subnets[0]
 
@@ -99,21 +100,15 @@ module "vectorstore" {
   bastion_state     = var.bastion_state
 }
 
-module "inference_chat" {
-  source = "../../modules/inference/chat"
+# module "inference_chat" {
+#   source = "../../modules/inference/chat"
 
-  environment  = var.environment
-  aws_region   = var.aws_region
-  project_name = var.project_name
+#   environment  = var.environment
+#   aws_region   = var.aws_region
+#   project_name = var.project_name
 
-  lambda_sg_ids     = module.vpc.vpc_sg_ids["lambda_sg"]
-  lambda_subnet_ids = module.vpc.private_subnets
+#   lambda_sg_ids     = [module.vpc.vpc_sg_ids.lambda_sg]
+#   lambda_subnet_ids = module.vpc.public_subnets
 
-  rds_instance_config = {
-    db_host             = module.vectorstore.db_host
-    db_port             = module.vectorstore.db_port
-    db_name             = module.vectorstore.db_name
-    db_user             = module.vectorstore.db_username
-    db_pass_secret_name = module.vectorstore.db_password_secret_name
-  }
-}
+#   rds_instance_config = module.vectorstore.rds_instance_config
+# }

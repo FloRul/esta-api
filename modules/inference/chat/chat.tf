@@ -1,5 +1,9 @@
 locals {
   lambda_function_name = "${var.project_name}-inference-chat-${var.environment}"
+  runtime              = "python3.11"
+  timeout              = 60
+  memory_size          = 256
+  powertools_layer_arn = "arn:aws:lambda:${var.aws_region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:67"
 }
 
 
@@ -8,18 +12,26 @@ module "chat_inference_lambda" {
 
   function_name = local.lambda_function_name
 
-  timeout     = 60
-  memory_size = 256
+  create_package           = false
+  image_uri                = data.aws_ecr_image.lambda_image.image_uri
+
+  handler       = "index.lambda_handler"
+  source_path   = "${path.module}/src"
+  publish       = true
+  timeout       = local.timeout
+  memory_size   = local.memory_size
+  runtime       = local.runtime
 
   vpc_security_group_ids = var.lambda_sg_ids
   vpc_subnet_ids         = var.lambda_subnet_ids
+  layers                 = [local.powertools_layer_arn]
 
   environment_variables = {
     PGVECTOR_DRIVER   = "psycopg2"
     PGVECTOR_HOST     = var.rds_instance_config.db_host
     PGVECTOR_PORT     = var.rds_instance_config.db_port
     PGVECTOR_DATABASE = var.rds_instance_config.db_name
-    PGVECTOR_USER     = var.rds_instance_config.db_user
+    PGVECTOR_PASS_ARN = var.rds_instance_config.db_pass_secret_arn
   }
 
   role_name                = "${local.lambda_function_name}-role"
@@ -49,17 +61,17 @@ module "chat_inference_lambda" {
       ]
     }
 
-    # bedrock_usage = {
-    #   effect = "Allow"
+    secret_manager = {
+      effect = "Allow"
 
-    #   resources = [
-    #     "*"
-    #   ]
+      resources = [
+        var.rds_instance_config.db_pass_secret_arn
+      ]
 
-    #   actions = [
-    #     "bedrock:*"
-    #   ]
-    # }
+      actions = [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
 
     rds_connect_read = {
       effect = "Allow"

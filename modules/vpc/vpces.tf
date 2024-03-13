@@ -43,3 +43,12 @@ resource "aws_vpc_endpoint" "rds" {
 
   private_dns_enabled = true
 }
+
+resource "aws_vpc_endpoint" "secret_manager" {
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.${var.region}.secretsmanager"
+  vpc_endpoint_type   = "Interface"
+  security_group_ids  = [aws_security_group.secret_manager_sg.id]
+  subnet_ids          = module.vpc.public_subnets
+  private_dns_enabled = true
+}

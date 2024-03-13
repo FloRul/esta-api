@@ -4,10 +4,10 @@ output "db_subnet_group_name" {
 
 output "vpc_sg_ids" {
   value = {
-    "bedrock_sg"  = aws_security_group.bedrock_sg.id
-    "database_sg" = aws_security_group.database_sg.id
-    "bastion_sg"  = aws_security_group.bastion_sg.id
-    "lambda_sg"   = aws_security_group.lambda_sg.id
+    bedrock_sg  = aws_security_group.bedrock_sg.id
+    database_sg = aws_security_group.database_sg.id
+    bastion_sg  = aws_security_group.bastion_sg.id
+    lambda_sg   = aws_security_group.lambda_sg.id
   }
 }
 
