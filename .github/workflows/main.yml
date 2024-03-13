@@ -7,11 +7,8 @@ on:
       - prod
 
 jobs:
-  deploy-api-dev:
+  build-push-container-lambdas:
     if: github.ref == 'refs/heads/dev'
-    defaults:
-      run:
-        working-directory: ./env/dev
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,7 +26,10 @@ jobs:
 
       - name: Create ECR repository if it doesn't exist
         run: |
-          aws ecr describe-repositories --repository-names ${{ vars.INFERENCE_CHAT_ECR }} || aws ecr create-repository --repository-name ${{ vars.INFERENCE_CHAT_ECR }}
+          aws ecr describe-repositories --repository-names ${{ vars.INFERENCE_CHAT_ECR }} || \
+          aws ecr create-repository --repository-name ${{ vars.INFERENCE_CHAT_ECR }} && \
+          LIFECYCLE_POLICY=$(cat ./env/dev/setting/ecr_policy.json) && \
+          aws ecr put-lifecycle-policy --repository-name ${{ vars.INFERENCE_CHAT_ECR }} --lifecycle-policy-text "$LIFECYCLE_POLICY"
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -52,21 +52,30 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform fmt
-        id: fmt
-        run: terraform fmt -check
-        continue-on-error: true
 
-      - name: Terraform Init
-        id: init
-        run: terraform init -no-color -upgrade
+  deploy-api-infra:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    needs: build-push-container-lambdas
+    defaults:
+      run:
+        working-directory: ./env/dev
+    steps:
+    - name: Terraform fmt
+      id: fmt
+      run: terraform fmt -check
+      continue-on-error: true
 
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
-      
-      - name: Terraform Apply
-        id: apply
-        shell: bash
-        run: |
-          terraform apply -var-file="dev.tfvars" -var="inference_chat_repository_name=${{ vars.INFERENCE_CHAT_ECR }}" -no-color -auto-approve
+    - name: Terraform Init
+      id: init
+      run: terraform init -no-color -upgrade
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+    
+    - name: Terraform Apply
+      id: apply
+      shell: bash
+      run: |
+        terraform apply -var-file="dev.tfvars" -var="inference_chat_repository_name=${{ vars.INFERENCE_CHAT_ECR }}" -no-color -auto-approve
