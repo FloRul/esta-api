@@ -13,8 +13,8 @@ data "aws_ecr_image" "lambda_image" {
 module "chat_inference_lambda" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = local.lambda_function_name
-
+  function_name  = local.lambda_function_name
+  package_type   = "Image"
   create_package = false
   image_uri      = data.aws_ecr_image.lambda_image.image_uri
 
