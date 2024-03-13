@@ -36,14 +36,18 @@ variable "cognito_user_pool_arns" {
   }
 }
 
-variable "integrations" {
-  description = "The integrations for the API Gateway (only the path)"
-  type = list(object({
-    path_part = string
-    details = list(object({
-      http_method = string
-      lambda_arn  = string
-    }))
-  }))
-  nullable = true
+variable "api_body" {
+  description = "The OpenAPI specification for the API Gateway"
+  type        = string
+  nullable    = false
+}
+
+variable "lambda_arns" {
+  description = "The ARNs of the Lambda functions"
+  type        = list(string)
+  nullable    = false
+  validation {
+    condition     = can(var.lambda_arns)
+    error_message = "The Lambda ARNs must be provided"
+  }
 }

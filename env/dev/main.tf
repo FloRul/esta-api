@@ -57,27 +57,90 @@ module "esta_api" {
   environment            = var.environment
   aws_region             = var.aws_region
   cognito_user_pool_arns = var.cognito_user_pool_arns
-  integrations = [
-    {
-      path_part = "templates"
-      details = [
-        {
-          http_method = "GET"
-          lambda_arn  = module.template_management.get_templates_lambda_arn
-        },
-        {
-          http_method = "POST"
-          lambda_arn  = module.template_management.post_template_lambda_arn
-        },
-        {
-          http_method = "DELETE"
-          lambda_arn  = module.template_management.delete_template_lambda_arn
-        }
-      ]
-    },
+  lambda_arns = [
+    module.template_management.get_templates_lambda_arn,
+    module.template_management.post_templates_lambda_arn,
+    module.template_management.delete_templates_lambda_arn,
+    module.inference_chat.lambda_arn,
   ]
+
+  api_body = jsonencode({
+    swagger = "2.0",
+    openapi = "3.0.1",
+    info = {
+      title   = "${var.project_name}-api-${var.environment}",
+      version = "1.0.0"
+    },
+    paths = {
+      "/templates" = {
+        get = {
+          "x-amazon-apigateway-integration" = {
+            uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.get_templates_lambda_arn}/invocations"
+            passthroughBehavior = "when_no_templates"
+            httpMethod          = "POST"
+            type                = "aws_proxy"
+          }
+        },
+        post = {
+          "x-amazon-apigateway-integration" = {
+            uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.post_templates_lambda_arn}/invocations"
+            passthroughBehavior = "when_no_templates"
+            httpMethod          = "POST"
+            type                = "aws_proxy"
+          }
+        },
+        delete = {
+          "x-amazon-apigateway-integration" = {
+            uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.delete_templates_lambda_arn}/invocations"
+            passthroughBehavior = "when_no_templates"
+            httpMethod          = "POST"
+            type                = "aws_proxy"
+          }
+        }
+      },
+      "/chat" = {
+        post = {
+          "x-amazon-apigateway-integration" = {
+            uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.inference_chat.lambda_arn}/invocations"
+            passthroughBehavior = "when_no_templates"
+            httpMethod          = "POST"
+            type                = "aws_proxy"
+          }
+        }
+      }
+    }
+
+  })
 }
 
+# If you want to use Cognito User Pools for authorization, you can modify your Terraform code as follows:
+# post = {
+#   "x-amazon-apigateway-integration" = {
+#     uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.post_templates_lambda_arn}/invocations"
+#     passthroughBehavior = "when_no_templates"
+#     httpMethod          = "POST"
+#     type                = "aws_proxy"
+#   },
+#   security = [{
+#     cognitoAuth = []
+#   }]
+# }
+
+# And in the components section of your OpenAPI specification:
+
+# components = {
+#   securitySchemes = {
+#     cognitoAuth = {
+#       type = "apiKey",
+#       name = "Authorization",
+#       in = "header",
+#       "x-amazon-apigateway-authorizer" = {
+#         type = "cognito_user_pools",
+#         providerARNs = var.cognito_user_pool_arns
+#       }
+#     }
+#   }
+# }
 module "vpc" {
   source       = "../../modules/vpc"
   region       = var.aws_region
@@ -100,8 +163,16 @@ module "vectorstore" {
   bastion_state     = var.bastion_state
 }
 
+module "history" {
+  source       = "../../modules/chat_history"
+  project_name = var.project_name
+  environment  = var.environment
+}
+
 module "inference_chat" {
-  source = "../../modules/inference/chat"
+  depends_on             = [module.vectorstore, module.chat_history]
+  source                 = "../../modules/inference/chat"
+  lambda_repository_name = var.inference_chat_repository_name
 
   environment  = var.environment
   aws_region   = var.aws_region
@@ -110,6 +181,8 @@ module "inference_chat" {
   lambda_sg_ids     = [module.vpc.vpc_sg_ids.lambda_sg]
   lambda_subnet_ids = module.vpc.public_subnets
 
-  rds_instance_config    = module.vectorstore.rds_instance_config
-  lambda_repository_name = var.inference_chat_repository_name
+  rds_instance_config = module.vectorstore.rds_instance_config
+
+  dynamo_history_table_name  = module.chat_history.dynamo_table_name
+  dynamo_template_table_name = module.template_management.dynamo_table_name
 }

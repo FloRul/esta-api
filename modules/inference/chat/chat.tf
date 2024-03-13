@@ -102,23 +102,36 @@ module "chat_inference_lambda" {
       ]
     }
 
-    # dynamo_db = {
-    #   effect = "Allow"
+    dynamo_db_read_write = {
+      effect = "Allow"
 
-    #   resources = [
-    #     "arn:aws:dynamodb:${var.aws_region}:446872271111:table/${var.dynamo_history_table_name}"
-    #   ]
+      resources = [
+        "arn:aws:dynamodb:${var.aws_region}:446872271111:table/${var.dynamo_history_table_name}"
+      ]
 
-    #   actions = [
-    #     "dynamodb:PutItem",
-    #     "dynamodb:GetItem",
-    #     "dynamodb:UpdateItem",
-    #     "dynamodb:DeleteItem",
-    #     "dynamodb:Scan",
-    #     "dynamodb:Query",
-    #     "dynamodb:BatchWriteItem",
-    #     "dynamodb:BatchGetItem"
-    #   ]
-    # }
+      actions = [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Scan",
+        "dynamodb:Query",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:BatchGetItem"
+      ]
+    }
+
+    dynamo_db_read = {
+      effect = "Allow"
+
+      resources = [
+        "arn:aws:dynamodb:${var.aws_region}:446872271111:table/${var.dynamo_template_table_name}"
+      ]
+
+      actions = [
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:Query"
+      ]
+    }
   }
 }

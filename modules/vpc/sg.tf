@@ -22,3 +22,8 @@ resource "aws_security_group" "secret_manager_sg" {
   name   = "secret-manager-sg-${var.environment}"
   vpc_id = module.vpc.vpc_id
 }
+
+resource "aws_security_group" "dynamo_db_sg" {
+  name   = "dynamo-db-sg-${var.environment}"
+  vpc_id = module.vpc.vpc_id
+}

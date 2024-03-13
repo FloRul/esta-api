@@ -6,43 +6,19 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
 
 resource "aws_api_gateway_rest_api" "this" {
   name = "${var.project_name}-api-${var.environment}"
-  body = jsonencode({
-    swagger = "2.0",
-    openapi = "3.0.1",
-    info = {
-      title       = "${var.project_name}-api-${var.environment}"
-      description = "API for ${var.project_name} in ${var.environment}"
-      version     = "1.0"
-    },
-    paths = {
-      for integration in var.integrations : "/${integration.path_part}" => {
-        for detail in integration.details : (lower(detail.http_method)) => {
-          "x-amazon-apigateway-integration" = {
-            uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${detail.lambda_arn}/invocations"
-            passthroughBehavior = "when_no_templates"
-            httpMethod          = "POST"
-            type                = "aws_proxy"
-          }
-        }
-      }
-    },
-  })
+  body = var.api_body
 }
 
 data "aws_caller_identity" "current" {}
 
 resource "aws_lambda_permission" "apigw" {
   for_each = {
-    for idx, integration in flatten([for integration in var.integrations : integration.details]) :
-    "${idx}" => {
-      http_method = integration.http_method
-      lambda_arn  = integration.lambda_arn
-    }
+    for arn in var.lambda_arns : arn => arn
   }
 
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = split(":", each.value.lambda_arn)[6]
+  function_name = arn
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.this.execution_arn}/*/*"

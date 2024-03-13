@@ -40,7 +40,6 @@ resource "aws_vpc_endpoint" "rds" {
   vpc_endpoint_type  = "Interface"
   security_group_ids = [aws_security_group.database_sg.id]
   subnet_ids         = module.vpc.private_subnets
-
   private_dns_enabled = true
 }
 
@@ -49,6 +48,15 @@ resource "aws_vpc_endpoint" "secret_manager" {
   service_name        = "com.amazonaws.${var.region}.secretsmanager"
   vpc_endpoint_type   = "Interface"
   security_group_ids  = [aws_security_group.secret_manager_sg.id]
+  subnet_ids          = module.vpc.public_subnets
+  private_dns_enabled = true
+}
+
+resource "aws_vpc_endpoint" "dynamo_db" {
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.${var.region}.dynamodb"
+  vpc_endpoint_type   = "Interface"
+  security_group_ids  = [aws_security_group.dynamo_db_sg.id]
   subnet_ids          = module.vpc.public_subnets
   private_dns_enabled = true
 }
