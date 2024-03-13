@@ -7,7 +7,7 @@ module "llamaindex_layer" {
   description         = "My amazing lambda layer (deployed from S3)"
   compatible_runtimes = ["python3.11"]
 
-  source_path = "./src/lambda-layer"
+  source_path = "${path.module}/llama-index"
 
   store_on_s3 = true
   s3_bucket   = var.layers_storage

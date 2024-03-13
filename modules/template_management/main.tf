@@ -1,6 +1,3 @@
-resource "aws_s3_bucket" "lambda_storage" {
-  bucket = "${var.project_name}-lambda-storage-${var.environment}"
-}
 
 module "dynamo_index" {
   source      = "./dynamo"
@@ -9,7 +6,7 @@ module "dynamo_index" {
 
 module "lambdas" {
   source                = "./lambdas"
-  lambda_storage_bucket = aws_s3_bucket.lambda_storage.bucket
+  lambda_storage_bucket = var.lambda_storage_bucket
   template_dynamo_table = {
     name = module.dynamo_index.table_name,
     arn  = module.dynamo_index.table_arn,

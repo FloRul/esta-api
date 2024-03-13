@@ -40,6 +40,17 @@ variable "bastion_sg_ids" {
   type        = set(string)
 }
 
+variable "bastion_state" {
+  description = "The desired state of the bastion instance"
+  type        = string
+  default     = "running"
+  validation {
+    condition     = var.bastion_state == "running" || var.bastion_state == "stopped"
+    error_message = "The bastion state must be either 'running' or 'stopped'"
+  }
+
+}
+
 ## Storage settings
 variable "allocated_storage" {
   description = "The amount of storage to allocate for the RDS instance"

@@ -7,9 +7,14 @@ output "vpc_sg_ids" {
     "bedrock_sg"  = aws_security_group.bedrock_sg.id
     "database_sg" = aws_security_group.database_sg.id
     "bastion_sg"  = aws_security_group.bastion_sg.id
+    "lambda_sg"   = aws_security_group.lambda_sg.id
   }
 }
 
 output "private_subnets" {
   value = module.vpc.private_subnets
+}
+
+output "public_subnets" {
+  value = module.vpc.public_subnets
 }

@@ -13,3 +13,7 @@ output "vectorstore_address" {
 output "bastion_id" {
   value = aws_instance.bastion.id
 }
+
+output "bastion_state" {
+  value = aws_ec2_instance_state.bastion_state.state
+}

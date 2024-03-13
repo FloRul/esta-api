@@ -11,6 +11,11 @@ resource "aws_iam_instance_profile" "bastion_profile" {
   role = aws_iam_role.bastion_role.name
 }
 
+resource "aws_ec2_instance_state" "bastion_state" {
+  instance_id = aws_instance.bastion.id
+  state       = var.bastion_state
+}
+
 resource "aws_instance" "bastion" {
   ami           = data.aws_ami_ids.amazon_linux.ids[0]
   instance_type = "t2.micro"

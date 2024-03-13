@@ -6,7 +6,7 @@ resource "aws_db_instance" "vectorstore" {
   ## RDS instance settings
   allocated_storage   = var.allocated_storage
   storage_type        = var.storage_type
-  deletion_protection = true
+  deletion_protection = false
 
   # cannot be anything else than "postgres"
   engine         = "postgres"

@@ -29,4 +29,22 @@ variable "cognito_user_pool_arns" {
 }
 
 ## Vectorstore settings
+variable "bastion_state" {
+  description = "The desired state of the bastion instance"
+  type        = string
+  default     = "running"
+  validation {
+    condition     = var.bastion_state == "running" || var.bastion_state == "stopped"
+    error_message = "The bastion state must be either 'running' or 'stopped'"
+  }
+}
 
+variable "vectorstore_storage" {
+  description = "The amount of storage to allocate for the RDS instance"
+  type        = number
+  nullable    = false
+  validation {
+    condition     = var.vectorstore_storage > 0
+    error_message = "The storage must be greater than 0"
+  }
+}

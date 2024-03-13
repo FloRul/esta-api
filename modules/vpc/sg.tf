@@ -12,3 +12,8 @@ resource "aws_security_group" "bastion_sg" {
   name   = "bastion-sg-${var.environment}"
   vpc_id = module.vpc.vpc_id
 }
+
+resource "aws_security_group" "lambda_sg" {
+  name   = "lambda-sg-${var.environment}"
+  vpc_id = module.vpc.vpc_id
+}
