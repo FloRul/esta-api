@@ -42,41 +42,41 @@ module "lambda_storage" {
   force_destroy = true
 }
 
-# module "template_management" {
-#   source                = "../../modules/template_management"
-#   environment           = var.environment
-#   project_name          = var.project_name
-#   lambda_storage_bucket = module.lambda_storage.s3_bucket_id
-#   aws_region            = var.aws_region
-# }
+module "template_management" {
+  source                = "../../modules/template_management"
+  environment           = var.environment
+  project_name          = var.project_name
+  lambda_storage_bucket = module.lambda_storage.s3_bucket_id
+  aws_region            = var.aws_region
+}
 
-# module "esta_api" {
-#   depends_on             = [module.template_management]
-#   source                 = "../../modules/api"
-#   project_name           = var.project_name
-#   environment            = var.environment
-#   aws_region             = var.aws_region
-#   cognito_user_pool_arns = var.cognito_user_pool_arns
-#   integrations = [
-#     {
-#       path_part = "templates"
-#       details = [
-#         {
-#           http_method = "GET"
-#           lambda_arn  = module.template_management.get_templates_lambda_arn
-#         },
-#         {
-#           http_method = "POST"
-#           lambda_arn  = module.template_management.post_template_lambda_arn
-#         },
-#         {
-#           http_method = "DELETE"
-#           lambda_arn  = module.template_management.delete_template_lambda_arn
-#         }
-#       ]
-#     },
-#   ]
-# }
+module "esta_api" {
+  depends_on             = [module.template_management]
+  source                 = "../../modules/api"
+  project_name           = var.project_name
+  environment            = var.environment
+  aws_region             = var.aws_region
+  cognito_user_pool_arns = var.cognito_user_pool_arns
+  integrations = [
+    {
+      path_part = "templates"
+      details = [
+        {
+          http_method = "GET"
+          lambda_arn  = module.template_management.get_templates_lambda_arn
+        },
+        {
+          http_method = "POST"
+          lambda_arn  = module.template_management.post_template_lambda_arn
+        },
+        {
+          http_method = "DELETE"
+          lambda_arn  = module.template_management.delete_template_lambda_arn
+        }
+      ]
+    },
+  ]
+}
 
 module "vpc" {
   source       = "../../modules/vpc"

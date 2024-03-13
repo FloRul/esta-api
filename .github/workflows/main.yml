@@ -53,4 +53,4 @@ jobs:
         id: apply
         shell: bash
         run: |
-          terraform apply -var-file="dev.tfvars" -no-color
+          terraform apply -var-file="dev.tfvars" -no-color -auto-approve
