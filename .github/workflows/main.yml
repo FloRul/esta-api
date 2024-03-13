@@ -23,6 +23,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ca-central-1
       
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Create ECR repository if it doesn't exist
+        run: |
+          aws ecr describe-repositories --repository-names ${{ vars.INFERENCE_CHAT_ECR }} || aws ecr create-repository --repository-name ${{ vars.INFERENCE_CHAT_ECR }}
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/${{ vars.INFERENCE_CHAT_ECR }}:$IMAGE_TAG ./modules/inference/chat/src
+      
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -53,4 +69,4 @@ jobs:
         id: apply
         shell: bash
         run: |
-          terraform apply -var-file="dev.tfvars" -no-color -auto-approve
+          terraform apply -var-file="dev.tfvars" -var="inference_chat_repository_name=${{ vars.INFERENCE_CHAT_ECR }}" -no-color -auto-approve

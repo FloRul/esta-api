@@ -48,3 +48,13 @@ variable "vectorstore_storage" {
     error_message = "The storage must be greater than 0"
   }
 }
+
+## Inference settings
+variable "inference_chat_repository_name" {
+  type     = string
+  nullable = false
+  validation {
+    condition     = can(var.inference_chat_repository_name)
+    error_message = "The repository name must be provided"
+  }
+}

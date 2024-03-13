@@ -6,21 +6,25 @@ locals {
   powertools_layer_arn = "arn:aws:lambda:${var.aws_region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:67"
 }
 
+data "aws_ecr_image" "lambda_image" {
+  repository_name = var.lambda_repository_name
+  most_recent     = true
+}
 
 module "chat_inference_lambda" {
   source = "terraform-aws-modules/lambda/aws"
 
   function_name = local.lambda_function_name
 
-  create_package           = false
-  image_uri                = data.aws_ecr_image.lambda_image.image_uri
+  create_package = false
+  image_uri      = data.aws_ecr_image.lambda_image.image_uri
 
-  handler       = "index.lambda_handler"
-  source_path   = "${path.module}/src"
-  publish       = true
-  timeout       = local.timeout
-  memory_size   = local.memory_size
-  runtime       = local.runtime
+  handler     = "index.lambda_handler"
+  source_path = "${path.module}/src"
+  publish     = true
+  timeout     = local.timeout
+  memory_size = local.memory_size
+  runtime     = local.runtime
 
   vpc_security_group_ids = var.lambda_sg_ids
   vpc_subnet_ids         = var.lambda_subnet_ids

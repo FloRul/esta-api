@@ -42,7 +42,7 @@ variable "pg_vector_driver" {
   default  = "psycopg2"
 }
 
-# variable "dynamo_history_table_name" {
-#   type     = string
-#   nullable = false
-# }
+variable "lambda_repository_name" {
+  type     = string
+  nullable = false
+}
