@@ -19,7 +19,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ vars.AWS_REGION }}
       
       - name: Login to Amazon ECR
         id: login-ecr
@@ -71,7 +71,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: ${{ vars.AWS_REGION }}
 
     - name: Terraform fmt
       id: fmt
@@ -90,4 +90,4 @@ jobs:
       id: apply
       shell: bash
       run: |
-        terraform apply -var-file="dev.tfvars" -var="inference_chat_repository_name=${{ vars.INFERENCE_CHAT_ECR }}" -no-color -auto-approve
+        terraform apply -var-file="dev.tfvars" -var="inference_chat_repository_name=${{ vars.INFERENCE_CHAT_ECR }}" -var="aws_region=${{ vars.AWS_REGION }}" -no-color -auto-approve
