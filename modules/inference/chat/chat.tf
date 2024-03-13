@@ -3,7 +3,6 @@ locals {
   runtime              = "python3.11"
   timeout              = 60
   memory_size          = 256
-  powertools_layer_arn = "arn:aws:lambda:${var.aws_region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:67"
 }
 
 data "aws_ecr_image" "lambda_image" {
@@ -20,15 +19,12 @@ module "chat_inference_lambda" {
   image_uri      = data.aws_ecr_image.lambda_image.image_uri
 
   handler     = "index.lambda_handler"
-  source_path = "${path.module}/src"
-  publish     = true
   timeout     = local.timeout
   memory_size = local.memory_size
   runtime     = local.runtime
 
   vpc_security_group_ids = var.lambda_sg_ids
   vpc_subnet_ids         = var.lambda_subnet_ids
-  layers                 = [local.powertools_layer_arn]
 
   environment_variables = {
     PGVECTOR_DRIVER   = "psycopg2"
