@@ -18,7 +18,7 @@ resource "aws_lambda_permission" "apigw" {
 
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = arn
+  function_name = split(":", each.value)[7]
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.this.execution_arn}/*/*"

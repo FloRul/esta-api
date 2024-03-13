@@ -11,9 +11,9 @@ output "post_template_lambda_arn" {
 }
 
 output "template_dynamo_table_name" {
-  value = module.dynamo_index.table_name
+  value = module.dynamo_index.dynamo_table_name
 }
 
 output "template_dynamo_table_arn" {
-  value = module.dynamo_index.table_arn
+  value = module.dynamo_index.dynamo_table_arn
 }
