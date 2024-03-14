@@ -27,7 +27,6 @@ module "chat_inference_lambda" {
   vpc_subnet_ids         = var.lambda_subnet_ids
 
   environment_variables = {
-    PGVECTOR_DRIVER   = "psycopg2"
     PGVECTOR_HOST     = var.rds_instance_config.db_host
     PGVECTOR_PORT     = var.rds_instance_config.db_port
     PGVECTOR_DATABASE = var.rds_instance_config.db_name

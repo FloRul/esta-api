@@ -20,7 +20,6 @@ class Retrieval:
 
         self._relevance_treshold = relevance_treshold
 
-        PGVECTOR_DRIVER = os.environ.get("PGVECTOR_DRIVER", "psycopg2")
         PGVECTOR_HOST = os.environ.get("PGVECTOR_HOST", "localhost")
         PGVECTOR_PORT = int(os.environ.get("PGVECTOR_PORT", 5432))
         PGVECTOR_DATABASE = os.environ.get("PGVECTOR_DATABASE", "postgres")
@@ -42,14 +41,12 @@ class Retrieval:
             vector_store=self._vector_store,
             embed_model=embedding_model,
         )
-        self._query_engine = self._index.as_query_engine()
+        self._query_engine = self._index.as_query_engine(similarity_top_k=10)
 
-    def fetch_documents(self, query: str, top_k: int = 10):
+    def fetch_documents(self, query: str):
         try:
-            docs = self._query_engine.query(
-                query=query,
-                k=top_k,
-            )
+            docs = self._query_engine.query(query)
+            
             return [x for x in docs if x[1] > self._relevance_treshold]
         except Exception as e:
             print(f"Error while retrieving documents : {e}")
