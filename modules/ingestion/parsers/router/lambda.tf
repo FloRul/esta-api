@@ -56,7 +56,7 @@ module "parsing_router_lambda" {
     lambda_invoke = {
       effect    = "Allow"
       actions   = ["lambda:InvokeFunction"]
-      resources = lambda_arns
+      resources = var.lambda_arns
     }
 
     s3 = {
