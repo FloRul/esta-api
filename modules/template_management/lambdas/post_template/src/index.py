@@ -7,6 +7,7 @@ from typing import Dict
 from aws_lambda_powertools import Logger, Metrics, Tracer
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 from aws_lambda_powertools.utilities.typing import LambdaContext
+from jinja2 import Environment, TemplateSyntaxError
 import boto3
 
 # Set up AWS Lambda Powertools
@@ -33,7 +34,6 @@ class Template(BaseModel):
 
 
 dynamodb = boto3.resource("dynamodb")
-from jinja2 import Environment, TemplateSyntaxError
 
 
 @metrics.log_metrics
@@ -61,6 +61,13 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
             Environment().parse(body["template_text"])
         except TemplateSyntaxError as e:
             return {"statusCode": 400, "body": f"Invalid Jinja template: {str(e)}"}
+
+        # Check if {{documents}} is in template_text
+        if "{{documents}}" not in body["template_text"]:
+            return {
+                "statusCode": 400,
+                "body": "The template_text must contain {{documents}} variable",
+            }
 
         body.pop("id", None)
         body.pop("creation_date", None)
