@@ -35,11 +35,11 @@ resource "aws_vpc_endpoint" "ssmmessages_endpoint" {
 }
 
 resource "aws_vpc_endpoint" "rds" {
-  vpc_id             = module.vpc.vpc_id
-  service_name       = "com.amazonaws.${var.region}.rds"
-  vpc_endpoint_type  = "Interface"
-  security_group_ids = [aws_security_group.database_sg.id]
-  subnet_ids         = module.vpc.private_subnets
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.${var.region}.rds"
+  vpc_endpoint_type   = "Interface"
+  security_group_ids  = [aws_security_group.database_sg.id]
+  subnet_ids          = module.vpc.private_subnets
   private_dns_enabled = true
 }
 
@@ -53,10 +53,10 @@ resource "aws_vpc_endpoint" "secret_manager" {
 }
 
 resource "aws_vpc_endpoint" "dynamo_db" {
-  vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.${var.region}.dynamodb"
-  vpc_endpoint_type   = "Interface"
-  security_group_ids  = [aws_security_group.dynamo_db_sg.id]
-  subnet_ids          = module.vpc.public_subnets
-  private_dns_enabled = true
+  vpc_id             = module.vpc.vpc_id
+  service_name       = "com.amazonaws.${var.region}.dynamodb"
+  vpc_endpoint_type  = "Gateway"
+  security_group_ids = [aws_security_group.dynamo_db_sg.id]
+  subnet_ids         = module.vpc.public_subnets
+  route_table_ids    = module.vpc.public_route_table_ids
 }
