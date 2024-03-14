@@ -1,7 +1,8 @@
 
 module "dynamo_index" {
-  source      = "./dynamo"
-  environment = var.environment
+  source       = "./dynamo"
+  environment  = var.environment
+  project_name = var.project_name
 }
 
 module "lambdas" {
