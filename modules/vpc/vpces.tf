@@ -53,9 +53,8 @@ resource "aws_vpc_endpoint" "secret_manager" {
 }
 
 resource "aws_vpc_endpoint" "dynamo_db" {
-  vpc_id             = module.vpc.vpc_id
-  service_name       = "com.amazonaws.${var.region}.dynamodb"
-  vpc_endpoint_type  = "Gateway"
-  security_group_ids = [aws_security_group.dynamo_db_sg.id]
-  route_table_ids    = module.vpc.public_route_table_ids
+  vpc_id            = module.vpc.vpc_id
+  service_name      = "com.amazonaws.${var.region}.dynamodb"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = module.vpc.public_route_table_ids
 }
