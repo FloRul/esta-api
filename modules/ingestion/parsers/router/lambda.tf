@@ -5,7 +5,7 @@ locals {
 }
 
 module "parsing_router_lambda" {
-  source     = "terraform-aws-modules/lambda/aws"
+  source = "terraform-aws-modules/lambda/aws"
 
   function_name = local.lambda_name
   handler       = local.handler
@@ -56,7 +56,7 @@ module "parsing_router_lambda" {
     lambda_invoke = {
       effect    = "Allow"
       actions   = ["lambda:InvokeFunction"]
-      resources = [{ for arn in var.lambda_arns : arn => arn }]
+      resources = lambda_arns
     }
 
     s3 = {
