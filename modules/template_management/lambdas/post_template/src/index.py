@@ -66,12 +66,14 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
         body.pop("creation_date", None)
         body.pop("updated_at", None)
         body.pop("template_name", None)
+        body.pop("tags", None)
         # Validate the data using the Template model
         template = Template(
             id=id,
             creation_date=creation_date,
             updated_at=updated_at,
             template_name=template_name,
+            tags=body.get("tags", {}),
             **body,
         )
 
