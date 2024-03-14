@@ -187,3 +187,12 @@ module "inference_chat" {
   dynamo_history_table_name  = module.chat_history.dynamo_table_name
   dynamo_template_table_name = module.template_management.template_dynamo_table_name
 }
+
+module "ingestion" {
+  source                         = "../../modules/ingestion"
+  project_name                   = var.project_name
+  aws_region                     = var.aws_region
+  environment                    = var.environment
+  ingestion_supported_file_types = var.ingestion_supported_file_types
+  lambda_storage_bucket          = module.lambda_storage.s3_bucket_id
+}

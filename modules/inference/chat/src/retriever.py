@@ -9,7 +9,7 @@ from llama_index.core import ServiceContext, set_global_service_context
 
 # TODO: Create another user for the database for the read-only operations
 # TODO: Handle the case when the collection is empty or non existent
-class Retrieval:
+class Retriever:
     def __init__(
         self,
         collection_name,

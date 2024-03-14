@@ -58,3 +58,10 @@ variable "inference_chat_repository_name" {
     error_message = "The repository name must be provided"
   }
 }
+
+## Ingestion settings
+variable "ingestion_supported_file_types" {
+  description = "The file extension to filter for notifications ex: [\".pdf\", \".docx\"]"
+  type        = list(string)
+  nullable    = false
+}

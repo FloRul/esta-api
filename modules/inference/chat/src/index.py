@@ -8,6 +8,8 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from pydantic import BaseModel
 from jinja2 import Template, Environment
 
+from retriever import Retriever
+
 # Set up AWS Lambda Powertools
 tracer = Tracer()
 logger = Logger()
@@ -28,10 +30,14 @@ class InferenceChat(BaseModel):
     collection_id: str
 
 
-def get_template(template_id: str):
+def get_template(template_id: str) -> str:
     try:
         # get the template from the database
-        return template_table.get_item(Key={"id": template_id})["Item"]["template_text"]
+        t = template_table.get_item(Key={"id": template_id})["Item"]["template_text"]
+        if t is None:
+            return "{{ message }}\n\n{{ documents }}"
+        else:
+            return t
     except Exception as e:
         logger.error(e)
         return None
@@ -48,10 +54,23 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
     # Get the template
     template = get_template(inference_chat.template_id)
 
+    # Get the retriever
+    retriever = Retriever(
+        collection_name=inference_chat.collection_id,
+        relevance_treshold=0.6,
+    )
+    documents = (retriever.fetch_documents(query=inference_chat.message),)
+    
+    return json.dumps(
+        {
+            "documents": documents,
+            "prompt": template,
+        }
+    )
+
     if template:
         t = Environment().from_string(template)
         prompt = t.render(
-            documents=retriever.fetch_documents(query=inference_chat.message),
             message=inference_chat.message,
         )
         return response

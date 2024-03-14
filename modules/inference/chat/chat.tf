@@ -27,10 +27,12 @@ module "chat_inference_lambda" {
   vpc_subnet_ids         = var.lambda_subnet_ids
 
   environment_variables = {
-    PGVECTOR_HOST     = var.rds_instance_config.db_host
-    PGVECTOR_PORT     = var.rds_instance_config.db_port
-    PGVECTOR_DATABASE = var.rds_instance_config.db_name
-    PGVECTOR_PASS_ARN = var.rds_instance_config.db_pass_secret_arn
+    PGVECTOR_HOST               = var.rds_instance_config.db_host
+    PGVECTOR_PORT               = var.rds_instance_config.db_port
+    PGVECTOR_DATABASE           = var.rds_instance_config.db_name
+    PGVECTOR_PASS_ARN           = var.rds_instance_config.db_pass_secret_arn
+    TEMPLATE_STORAGE_TABLE_NAME = var.dynamo_template_table_name
+    HISTORY_STORAGE_TABLE_NAME  = var.dynamo_history_table_name
   }
 
   role_name                = "${local.lambda_function_name}-role"
