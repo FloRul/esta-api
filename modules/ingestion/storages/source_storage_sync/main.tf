@@ -17,7 +17,8 @@ module "source_storage" {
 }
 
 resource "aws_sqs_queue" "source_ingestion" {
-  name = local.queue_name
+  name                       = local.queue_name
+  visibility_timeout_seconds = var.queue_visibility_timeout_seconds
 }
 
 resource "aws_sqs_queue_policy" "sqs_policy" {

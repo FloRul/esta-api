@@ -12,7 +12,7 @@ module "parsing_router_lambda" {
   runtime       = local.runtime
   publish       = true
   source_path   = "${path.module}/src"
-  timeout       = 900
+  timeout       = var.lambda_timeout
   memory_size   = 2048
   store_on_s3   = true
   s3_bucket     = var.lambda_storage_bucket
@@ -86,4 +86,5 @@ resource "aws_lambda_event_source_mapping" "ingestion_queue_trigger" {
   enabled          = true
   function_name    = module.parsing_router_lambda.lambda_function_name
   batch_size       = 10
+
 }

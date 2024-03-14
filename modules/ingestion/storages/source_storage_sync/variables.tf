@@ -15,3 +15,10 @@ variable "environment" {
   type        = string
   nullable    = false
 }
+
+variable "queue_visibility_timeout_seconds" {
+  description = "The visibility timeout for the ingestion queue"
+  type        = number
+  default     = 900
+  nullable    = false
+}

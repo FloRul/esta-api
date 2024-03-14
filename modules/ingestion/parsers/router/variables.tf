@@ -27,3 +27,8 @@ variable "lambda_arns" {
   nullable = false
   type     = list(string)
 }
+
+variable "lambda_timeout" {
+  nullable = false
+  type     = number
+}
