@@ -76,12 +76,12 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
         )
 
         # Check if item exists
-        response = table.get_item(Key={"id": id})
+        response = table.get_item(Key={"PK": id})
 
         if "Item" in response:
             # Item exists, update it
             table.update_item(
-                Key={"id": id},
+                Key={"PK": id},
                 UpdateExpression="set creation_date=:d, updated_at=:ua, template_name=:n, template_text=:t, tags=:g",
                 ExpressionAttributeValues={
                     ":d": creation_date,
