@@ -57,6 +57,5 @@ resource "aws_vpc_endpoint" "dynamo_db" {
   service_name       = "com.amazonaws.${var.region}.dynamodb"
   vpc_endpoint_type  = "Gateway"
   security_group_ids = [aws_security_group.dynamo_db_sg.id]
-  subnet_ids         = module.vpc.public_subnets
   route_table_ids    = module.vpc.public_route_table_ids
 }
