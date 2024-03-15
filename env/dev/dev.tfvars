@@ -4,3 +4,4 @@ cognito_user_pool_arns         = ["arn:aws:cognito-idp:us-east-1:446872271111:us
 bastion_state                  = "stopped"
 vectorstore_storage            = 20
 ingestion_supported_file_types = [".pdf"]
+aws_region                     = "us-east-1"

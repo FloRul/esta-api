@@ -1,7 +1,8 @@
 locals {
-  lambda_name = "${var.project_name}-parsing-router-${var.environment}"
-  handler     = "index.lambda_handler"
-  runtime     = "python3.11"
+  lambda_name          = "${var.project_name}-parsing-router-${var.environment}"
+  handler              = "index.lambda_handler"
+  runtime              = "python3.11"
+  powertools_layer_arn = "arn:aws:lambda:${var.aws_region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:67"
 }
 
 module "parsing_router_lambda" {
@@ -21,6 +22,8 @@ module "parsing_router_lambda" {
     LAMBDA_MAPPING = jsonencode({
 
     })
+
+    layers = [local.powertools_layer_arn]
   }
 
   attach_policy_statements = true
