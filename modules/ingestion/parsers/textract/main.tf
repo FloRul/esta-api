@@ -19,7 +19,6 @@ module "textract_parser" {
   layers = [local.powertools_layer_arn]
 
   environment_variables = {
-    AWS_REGION       = var.aws_region
     RAW_TEXT_STORAGE = var.raw_text_storage_bucket
   }
   attach_policy_statements = true
