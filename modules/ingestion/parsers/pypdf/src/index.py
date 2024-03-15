@@ -27,9 +27,10 @@ def lambda_handler(event, context):
         for page in range(len(pdf_file.pages)):
             text += pdf_file.pages[page].extract_text()
         # write to s3
+        key_without_ext = os.path.splitext(key)[0]
         s3_client.put_object(
             Bucket=os.environ["RAW_TEXT_STORAGE"],
-            Key=f"{key}.txt",
+            Key=f"{key_without_ext}.txt",
             Body=text,
         )
         logger.info(f"Invoked textract for {key}")
