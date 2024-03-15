@@ -47,7 +47,7 @@ module "pypdf_parser" {
     s3 = {
       effect    = "Allow"
       actions   = ["s3:PutObject", "s3:ListBucket"]
-      resources = [bucket_arn]
+      resources = [local.bucket_arn]
     }
   }
 }
