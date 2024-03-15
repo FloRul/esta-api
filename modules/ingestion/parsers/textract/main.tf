@@ -23,16 +23,6 @@ module "textract_parser" {
   }
   attach_policy_statements = true
   policy_statements = {
-    s3 = {
-      effect = "Allow"
-      actions = [
-        "s3:GetObject",
-        "s3:PutObject",
-      ]
-      resources = [
-        var.template_dynamo_table.arn,
-      ]
-    }
 
     log_group = {
       effect    = "Allow"
