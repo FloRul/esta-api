@@ -19,7 +19,8 @@ module "textract_parser" {
   layers = [local.powertools_layer_arn]
 
   environment_variables = {
-    DYNAMODB_TABLE = var.template_dynamo_table.name
+    AWS_REGION       = var.aws_region
+    RAW_TEXT_STORAGE = var.raw_text_storage_bucket
   }
   attach_policy_statements = true
   policy_statements = {

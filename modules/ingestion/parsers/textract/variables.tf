@@ -26,3 +26,9 @@ variable "lambda_timeout" {
   description = "The timeout for the lambda functions"
   type        = number
 }
+
+variable "raw_text_storage_bucket" {
+  description = "The S3 bucket to store the raw text"
+  type        = string
+  nullable    = false
+}
