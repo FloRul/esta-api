@@ -22,14 +22,13 @@ metrics = Metrics()
 def lambda_handler(event, context):
     bucket = event["bucket"]
     key = event["key"]
-    print(f"Invoking textract for {key}")
+    logger.info(f"Invoking textract for {key}")
     try:
 
         document = textractor.start_document_analysis(
             file_source=f"s3://{bucket}/{key}",
             features=[TextractFeatures.LAYOUT, TextractFeatures.TABLES],
             save_image=False,
-            # s3_output_path="s3://" + os.environ["RAW_TEXT_STORAGE"],
         )
 
         config = TextLinearizationConfig(
@@ -50,8 +49,8 @@ def lambda_handler(event, context):
             Key=f"{key}.txt",
             Body=text,
         )
-        print(f"Invoked textract for {key}")
+        logger.info(f"Invoked textract for {key}")
     except Exception as e:
-        print(e)
+        logger.error(e)
         raise e
     return {"statusCode": 200}

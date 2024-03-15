@@ -10,8 +10,8 @@ module "textract_parser" {
   handler       = "index.lambda_handler"
   runtime       = local.runtime
   publish       = true
-
-  source_path = "${path.module}/src"
+  timeout       = var.lambda_timeout
+  source_path   = "${path.module}/src"
 
   store_on_s3 = true
   s3_bucket   = var.lambda_storage_bucket
