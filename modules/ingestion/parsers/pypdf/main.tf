@@ -5,7 +5,7 @@ locals {
   bucket_arn           = "arn:aws:s3:::${var.raw_text_storage_bucket}"
 }
 
-module "textract_parser" {
+module "pypdf_parser" {
   source        = "terraform-aws-modules/lambda/aws"
   function_name = local.lambda_name
   handler       = "index.lambda_handler"
@@ -23,6 +23,7 @@ module "textract_parser" {
   environment_variables = {
     RAW_TEXT_STORAGE = var.raw_text_storage_bucket
   }
+  role_name                = "${local.lambda_name}-role"
   attach_policy_statements = true
   policy_statements = {
 

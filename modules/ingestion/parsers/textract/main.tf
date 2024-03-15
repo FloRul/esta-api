@@ -22,6 +22,7 @@ module "textract_parser" {
   environment_variables = {
     RAW_TEXT_STORAGE = var.raw_text_storage_bucket
   }
+  role_name                = "${local.lambda_name}-role"
   attach_policy_statements = true
   policy_statements = {
 
