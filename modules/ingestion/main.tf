@@ -44,7 +44,7 @@ module "textract_parser" {
 }
 
 module "pypdf_parser" {
-  source                  = "./parsers/textract"
+  source                  = "./parsers/pypdf"
   project_name            = var.project_name
   environment             = var.environment
   aws_region              = var.aws_region
