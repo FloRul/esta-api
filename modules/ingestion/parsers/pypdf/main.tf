@@ -3,6 +3,7 @@ locals {
   powertools_layer_arn = "arn:aws:lambda:${var.aws_region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:67"
   lambda_name          = "${var.project_name}-pypdf-parser-${var.environment}"
   output_bucket_arn    = "arn:aws:s3:::${var.raw_text_storage_bucket}"
+  source_bucket_arn    = "arn:aws:s3:::${var.source_bucket_id}"
 }
 
 module "pypdf_parser" {
@@ -53,7 +54,7 @@ module "pypdf_parser" {
       ]
       resources = [
         local.output_bucket_arn,
-        var.source_bucket_arn,
+        local.source_bucket_arn,
       ]
     }
   }

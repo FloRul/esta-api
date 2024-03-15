@@ -33,7 +33,7 @@ variable "raw_text_storage_bucket" {
   nullable    = false
 }
 
-variable "source_bucket_arn" {
+variable "source_bucket_id" {
   description = "The ARN of the source bucket"
   type        = string
   nullable    = false
