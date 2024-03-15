@@ -18,12 +18,13 @@ module "parsing_router_lambda" {
   store_on_s3   = true
   s3_bucket     = var.lambda_storage_bucket
 
+  layers = [local.powertools_layer_arn]
+
   environment_variables = {
     LAMBDA_MAPPING = jsonencode({
 
     })
 
-    layers = [local.powertools_layer_arn]
   }
 
   attach_policy_statements = true
