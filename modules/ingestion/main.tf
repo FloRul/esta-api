@@ -20,7 +20,7 @@ module "parsing_router" {
   lambda_timeout        = local.lambda_timeout
 
   lambda_arns = [
-    module.textract_parser.lambda_function_arn
+    module.pypdf_parser.lambda_function_arn
   ]
   extension_lambda_mapping = jsonencode({
     ".pdf" = module.pypdf_parser.lambda_function_name
