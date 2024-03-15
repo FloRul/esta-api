@@ -1,7 +1,4 @@
 from aws_lambda_powertools import Logger, Metrics, Tracer
-from aws_lambda_powertools.utilities.typing import LambdaContext
-from aws_lambda_powertools.utilities.data_classes import SQSEvent
-from aws_lambda_powertools.utilities.data_classes import SQSEvent
 import json
 import os
 import boto3
@@ -14,12 +11,12 @@ metrics = Metrics()
 @metrics.log_metrics
 @logger.inject_lambda_context
 @tracer.capture_lambda_handler
-def lambda_handler(event: SQSEvent, context: LambdaContext):
-    for record in event.records:
+def lambda_handler(event, context):
+    records = json.loads(event["Records"][0]["body"])["Records"]
+    for record in records:
         try:
-            body = json.loads(record.body)
-            bucket = body["s3"]["bucket"]["name"]
-            key = body["s3"]["object"]["key"]
+            bucket = record["s3"]["bucket"]["name"]
+            key = record["s3"]["object"]["key"]
             extension = os.path.splitext(key)[-1]
 
             logger.info(f"Received record: {key} with extension {extension}")
