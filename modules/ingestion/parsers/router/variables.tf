@@ -32,3 +32,8 @@ variable "lambda_timeout" {
   nullable = false
   type     = number
 }
+
+variable "extension_lambda_mapping" {
+  nullable = false
+  type     = string
+}

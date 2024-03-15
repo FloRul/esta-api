@@ -21,10 +21,7 @@ module "parsing_router_lambda" {
   layers = [local.powertools_layer_arn]
 
   environment_variables = {
-    LAMBDA_MAPPING = jsonencode({
-
-    })
-
+    LAMBDA_MAPPING = var.extension_lambda_mapping
   }
 
   attach_policy_statements = true
