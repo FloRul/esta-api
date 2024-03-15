@@ -92,3 +92,10 @@ jobs:
       shell: bash
       run: |
         terraform apply -var-file="dev.tfvars" -var="inference_chat_repository_name=${{ vars.INFERENCE_CHAT_ECR }}" -var="aws_region=${{ vars.AWS_REGION }}" -no-color -auto-approve
+
+    - name: Microsoft Teams Notification
+      uses: skitionek/notify-microsoft-teams@master
+      if: always()
+      with:
+        webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+        dry_run: True
