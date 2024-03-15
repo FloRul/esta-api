@@ -55,6 +55,8 @@ module "pypdf_parser" {
       resources = [
         local.output_bucket_arn,
         local.source_bucket_arn,
+        "${local.output_bucket_arn}/*",
+        "${local.source_bucket_arn}/*"
       ]
     }
   }
