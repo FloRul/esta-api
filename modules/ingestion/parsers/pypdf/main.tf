@@ -2,7 +2,7 @@ locals {
   runtime              = "python3.11"
   powertools_layer_arn = "arn:aws:lambda:${var.aws_region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:67"
   lambda_name          = "${var.project_name}-pypdf-parser-${var.environment}"
-  bucket_arn           = "arn:aws:s3:::${var.raw_text_storage_bucket}"
+  output_bucket_arn    = "arn:aws:s3:::${var.raw_text_storage_bucket}"
 }
 
 module "pypdf_parser" {
@@ -51,7 +51,10 @@ module "pypdf_parser" {
         "s3:ListBucket",
         "s3:GetObject",
       ]
-      resources = [local.bucket_arn]
+      resources = [
+        local.output_bucket_arn,
+        var.source_bucket_arn,
+      ]
     }
   }
 }

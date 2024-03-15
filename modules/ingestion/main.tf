@@ -51,4 +51,5 @@ module "pypdf_parser" {
   lambda_storage_bucket   = var.lambda_storage_bucket
   lambda_timeout          = local.lambda_timeout
   raw_text_storage_bucket = module.raw_text_storage.bucket_id
+  source_bucket_arn       = module.source_storage_sync.source_bucket_arn
 }
