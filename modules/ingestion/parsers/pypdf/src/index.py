@@ -24,8 +24,8 @@ def lambda_handler(event, context):
 
         pdf_file = pypdf.PdfReader(io.BytesIO(pdf_file_content))
         text = ""
-        for page in range(pdf_file.getNumPages()):
-            text += pdf_file.getPage(page).extractText()
+        for page in range(len(pdf_file.pages)):
+            text += pdf_file.pages[page].extract_text()
         # write to s3
         s3_client.put_object(
             Bucket=os.environ["RAW_TEXT_STORAGE"],
