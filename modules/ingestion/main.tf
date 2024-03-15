@@ -23,7 +23,7 @@ module "parsing_router" {
     module.textract_parser.lambda_function_arn
   ]
   extension_lambda_mapping = jsonencode({
-    ".pdf" = module.textract_parser.lambda_function_name
+    ".pdf" = module.pypdf_parser.lambda_function_name
   })
 }
 
@@ -34,6 +34,16 @@ module "raw_text_storage" {
 }
 
 module "textract_parser" {
+  source                  = "./parsers/textract"
+  project_name            = var.project_name
+  environment             = var.environment
+  aws_region              = var.aws_region
+  lambda_storage_bucket   = var.lambda_storage_bucket
+  lambda_timeout          = local.lambda_timeout
+  raw_text_storage_bucket = module.raw_text_storage.bucket_id
+}
+
+module "pypdf_parser" {
   source                  = "./parsers/textract"
   project_name            = var.project_name
   environment             = var.environment
