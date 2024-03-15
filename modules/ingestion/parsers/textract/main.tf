@@ -10,6 +10,7 @@ module "textract_parser" {
   handler       = "index.lambda_handler"
   runtime       = local.runtime
   publish       = true
+  memory_size   = 2048
   timeout       = var.lambda_timeout
   source_path   = "${path.module}/src"
 

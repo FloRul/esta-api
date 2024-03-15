@@ -29,6 +29,7 @@ def lambda_handler(event, context):
             file_source=f"s3://{bucket}/{key}",
             features=[TextractFeatures.LAYOUT, TextractFeatures.TABLES],
             save_image=False,
+            # s3_output_path=f"s3://{os.environ.get("RAW_TEXT_STORAGE")}/{key}/"
         )
 
         config = TextLinearizationConfig(
