@@ -54,11 +54,11 @@ module "parsing_router_lambda" {
       ]
     }
 
-    # lambda_invoke = {
-    #   effect    = "Allow"
-    #   actions   = ["lambda:InvokeFunction"]
-    #   resources = var.lambda_arns
-    # }
+    lambda_invoke = {
+      effect    = "Allow"
+      actions   = ["lambda:InvokeFunction"]
+      resources = var.lambda_arns
+    }
 
     s3 = {
       effect = "Allow"
