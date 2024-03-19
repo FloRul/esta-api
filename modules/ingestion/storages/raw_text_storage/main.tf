@@ -1,5 +1,5 @@
 locals {
-  queue_name  = "${var.project_name}-ingestion-queue-${var.environment}"
+  queue_name  = "${var.project_name}-parsing-queue-${var.environment}"
   bucket_name = "${var.project_name}-raw-text-storage-${var.environment}"
 }
 

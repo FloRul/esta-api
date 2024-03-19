@@ -126,7 +126,7 @@ module "recursive_indexer_lambda" {
       actions = [
         "s3:GetObject",
         "s3:PutObject",
-        "s3:ListBucket"
+        "s3:ListBucket",
       ]
     }
   }
