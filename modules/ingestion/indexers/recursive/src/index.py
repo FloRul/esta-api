@@ -76,7 +76,15 @@ def fetch_file(bucket, key):
 def lambda_handler(event, context):
     logger.info(f"event: {event}")
     if "Records" in event and event["Records"]:
-        records = json.loads(event["Records"][0]["body"])["Records"]
+        body = json.loads(event["Records"][0]["body"])
+        if "Records" in body:
+            records = body["Records"]
+        else:
+            logger.error("No 'Records' in body")
+            return {
+                "status": "failure",
+                "message": "No 'Records' in body",
+            }
     else:
         logger.error("No 'Records' in event or 'Records' is empty")
         return {
@@ -90,8 +98,11 @@ def lambda_handler(event, context):
             logger.info(f"source_bucket: {bucket}, source_key: {key}")
 
             if eventName.startswith(OBJECT_CREATED):
+                logger.info(f"processing {key} from {bucket}")
                 local_filename = fetch_file(bucket, key)
+                logger.info(f"downloaded {key} from {bucket} to {local_filename}")
 
+                logger.info(f"loading documents from {local_filename}")
                 documents = SimpleDirectoryReader(local_filename).load_data()
 
                 logger.info(f"loaded {len(documents)} documents from {local_filename}")
