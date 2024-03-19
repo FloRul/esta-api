@@ -3,4 +3,5 @@ langchain-text-splitters
 llama-index
 llama-index-vector-stores-postgres
 llama-index-embeddings-bedrock
+aws_xray_sdk
 boto3
