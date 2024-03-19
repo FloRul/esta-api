@@ -9,3 +9,9 @@ variable "environment" {
   type        = string
   nullable    = false
 }
+
+variable "queue_visibility_timeout_seconds" {
+  description = "The visibility timeout for the SQS queue"
+  type        = number
+  nullable    = false
+}

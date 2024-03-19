@@ -1,8 +1,8 @@
 locals {
   lambda_function_name = "${var.project_name}-recursive-indexer-${var.environment}"
   runtime              = "python3.11"
-  timeout              = 60
-  memory_size          = 2048
+
+  memory_size = 2048
 }
 
 data "aws_ecr_image" "lambda_image" {
@@ -10,7 +10,7 @@ data "aws_ecr_image" "lambda_image" {
   most_recent     = true
 }
 
-module "chat_inference_lambda" {
+module "recursive_indexer_lambda" {
   source = "terraform-aws-modules/lambda/aws"
 
   function_name  = local.lambda_function_name
@@ -19,7 +19,7 @@ module "chat_inference_lambda" {
   image_uri      = data.aws_ecr_image.lambda_image.image_uri
 
   handler     = "index.lambda_handler"
-  timeout     = local.timeout
+  timeout     = var.queue_visibility_timeout_seconds
   memory_size = local.memory_size
   runtime     = local.runtime
 
@@ -27,10 +27,10 @@ module "chat_inference_lambda" {
   vpc_subnet_ids         = var.lambda_subnet_ids
 
   environment_variables = {
-    PGVECTOR_HOST               = var.rds_instance_config.db_host
-    PGVECTOR_PORT               = var.rds_instance_config.db_port
-    PGVECTOR_DATABASE           = var.rds_instance_config.db_name
-    PGVECTOR_PASS_ARN           = var.rds_instance_config.db_pass_secret_arn
+    PGVECTOR_HOST     = var.rds_instance_config.db_host
+    PGVECTOR_PORT     = var.rds_instance_config.db_port
+    PGVECTOR_DATABASE = var.rds_instance_config.db_name
+    PGVECTOR_PASS_ARN = var.rds_instance_config.db_pass_secret_arn
   }
 
   role_name                = "${local.lambda_function_name}-role"
@@ -101,4 +101,11 @@ module "chat_inference_lambda" {
       ]
     }
   }
+}
+
+resource "aws_lambda_event_source_mapping" "parsing_queue_trigger" {
+  event_source_arn = var.parsing_queue_arn
+  enabled          = true
+  function_name    = module.recursive_indexer_lambda.lambda_function_name
+  batch_size       = 10
 }

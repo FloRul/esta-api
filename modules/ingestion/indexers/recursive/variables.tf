@@ -47,3 +47,13 @@ variable "lambda_repository_name" {
   nullable = false
 }
 
+variable "queue_visibility_timeout_seconds" {
+  description = "The visibility timeout for the SQS queue"
+  type        = number
+  default     = 60
+}
+
+variable "parsing_queue_arn" {
+  type     = string
+  nullable = false
+}

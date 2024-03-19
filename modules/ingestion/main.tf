@@ -28,9 +28,10 @@ module "parsing_router" {
 }
 
 module "raw_text_storage" {
-  source       = "./storages/raw_text_storage"
-  project_name = var.project_name
-  environment  = var.environment
+  source                           = "./storages/raw_text_storage"
+  project_name                     = var.project_name
+  environment                      = var.environment
+  queue_visibility_timeout_seconds = local.lambda_timeout
 }
 
 module "textract_parser" {
@@ -55,12 +56,14 @@ module "pypdf_parser" {
 }
 
 module "recursive_indexer" {
-  source                 = "./indexers/recursive"
-  project_name           = var.project_name
-  environment            = var.environment
-  aws_region             = var.aws_region
-  rds_instance_config    = var.rds_instance_config
-  lambda_sg_ids          = var.lambda_sg_ids
-  lambda_subnet_ids      = var.lambda_subnet_ids
-  lambda_repository_name = var.recursive_indexer_repository_name
+  source                           = "./indexers/recursive"
+  project_name                     = var.project_name
+  environment                      = var.environment
+  aws_region                       = var.aws_region
+  rds_instance_config              = var.rds_instance_config
+  lambda_sg_ids                    = var.lambda_sg_ids
+  lambda_subnet_ids                = var.lambda_subnet_ids
+  lambda_repository_name           = var.recursive_indexer_repository_name
+  queue_visibility_timeout_seconds = local.lambda_timeout
+  parsing_queue_arn                = module.raw_text_storage.parsing_queue_arn
 }
