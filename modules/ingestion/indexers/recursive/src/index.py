@@ -74,7 +74,14 @@ def fetch_file(bucket, key):
 @logger.inject_lambda_context
 @tracer.capture_lambda_handler
 def lambda_handler(event, context):
-    records = json.loads(event["Records"][0]["body"])["Records"]
+    if "Records" in event and event["Records"]:
+        records = json.loads(event["Records"][0]["body"])["Records"]
+    else:
+        logger.error("No 'Records' in event or 'Records' is empty")
+        return {
+            "status": "failure",
+            "message": "No 'Records' in event or 'Records' is empty",
+        }
     for record in records:
         eventName = record["eventName"]
         try:
