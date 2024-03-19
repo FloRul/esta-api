@@ -31,7 +31,13 @@ jobs:
           aws ecr create-repository --repository-name ${{ vars.INFERENCE_CHAT_ECR }} && \
           LIFECYCLE_POLICY=$(cat ./env/dev/settings/ecr_policy.json) && \
           aws ecr put-lifecycle-policy --repository-name ${{ vars.INFERENCE_CHAT_ECR }} --lifecycle-policy-text "$LIFECYCLE_POLICY"
+          aws ecr describe-repositories --repository-names ${{ vars.RECURSIVE_INDEXER_ECR }} || \
+          aws ecr create-repository --repository-name ${{ vars.RECURSIVE_INDEXER_ECR }} && \
+          LIFECYCLE_POLICY=$(cat ./env/dev/settings/ecr_policy.json) && \
+          aws ecr put-lifecycle-policy --repository-name ${{ vars.RECURSIVE_INDEXER_ECR }} --lifecycle-policy-text "$LIFECYCLE_POLICY"
 
+
+          
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -40,6 +46,8 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/${{ vars.INFERENCE_CHAT_ECR }}:$IMAGE_TAG ./modules/inference/chat/src
           docker push $ECR_REGISTRY/${{ vars.INFERENCE_CHAT_ECR }}:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/${{ vars.RECURSIVE_INDEXER_ECR }}:$IMAGE_TAG ./modules/ingestion/indexers/recursive/src
+          docker push $ECR_REGISTRY/${{ vars.RECURSIVE_INDEXER_ECR }}:$IMAGE_TAG
       
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -99,7 +107,11 @@ jobs:
       id: apply
       shell: bash
       run: |
-        terraform apply -var-file="dev.tfvars" -var="inference_chat_repository_name=${{ vars.INFERENCE_CHAT_ECR }}" -var="aws_region=${{ vars.AWS_REGION }}" -no-color -auto-approve
+        terraform apply -var-file="dev.tfvars" \
+        -var="inference_chat_repository_name=${{ vars.INFERENCE_CHAT_ECR }}" \
+        -var="recursive_indexer_repository_name=${{ vars.RECURSIVE_INDEXER_ECR }}" \
+        -var="aws_region=${{ vars.AWS_REGION }}" \
+        -no-color -auto-approve
 
     - name: Microsoft Teams Notification
       uses: skitionek/notify-microsoft-teams@master

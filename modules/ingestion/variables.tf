@@ -27,3 +27,29 @@ variable "ingestion_supported_file_types" {
   type        = list(string)
   nullable    = false
 }
+
+variable "rds_instance_config" {
+  type = object({
+    db_host            = string
+    db_port            = number
+    db_name            = string
+    db_pass_secret_arn = string
+  })
+  nullable = false
+}
+
+variable "lambda_sg_ids" {
+  type     = list(string)
+  nullable = false
+}
+
+variable "lambda_subnet_ids" {
+  type     = list(string)
+  nullable = false
+}
+
+variable "recursive_indexer_repository_name" {
+  description = "The name of the repository for the recursive indexer"
+  type        = string
+  nullable    = false
+}

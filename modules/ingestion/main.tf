@@ -53,3 +53,14 @@ module "pypdf_parser" {
   raw_text_storage_bucket = module.raw_text_storage.bucket_id
   source_bucket_id        = module.source_storage_sync.storage_bucket_id
 }
+
+module "recursive_indexer" {
+  source                 = "./indexers/recursive"
+  project_name           = var.project_name
+  environment            = var.environment
+  aws_region             = var.aws_region
+  rds_instance_config    = var.rds_instance_config
+  lambda_sg_ids          = var.lambda_sg_ids
+  lambda_subnet_ids      = var.lambda_subnet_ids
+  lambda_repository_name = var.recursive_indexer_repository_name
+}

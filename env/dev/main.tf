@@ -195,4 +195,10 @@ module "ingestion" {
   environment                    = var.environment
   ingestion_supported_file_types = var.ingestion_supported_file_types
   lambda_storage_bucket          = module.lambda_storage.s3_bucket_id
+
+  rds_instance_config = module.vectorstore.rds_instance_config
+  lambda_sg_ids       = [module.vpc.vpc_sg_ids.lambda_sg]
+  lambda_subnet_ids   = module.vpc.public_subnets
+
+  recursive_indexer_repository_name = var.recursive_indexer_repository_name
 }

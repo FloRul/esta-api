@@ -65,3 +65,13 @@ variable "ingestion_supported_file_types" {
   type        = list(string)
   nullable    = false
 }
+
+variable "recursive_indexer_repository_name" {
+  description = "The name of the repository for the recursive indexer"
+  type        = string
+  nullable    = false
+  validation {
+    condition     = can(var.recursive_indexer_repository_name)
+    error_message = "The repository name must be provided"
+  }
+}

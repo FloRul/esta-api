@@ -36,17 +36,14 @@ variable "rds_instance_config" {
   nullable = false
 }
 
+variable "pg_vector_driver" {
+  type     = string
+  nullable = false
+  default  = "psycopg2"
+}
+
 variable "lambda_repository_name" {
   type     = string
   nullable = false
 }
 
-variable "dynamo_history_table_name" {
-  type     = string
-  nullable = false
-}
-
-variable "dynamo_template_table_name" {
-  type     = string
-  nullable = false
-}
