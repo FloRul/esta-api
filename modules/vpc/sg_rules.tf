@@ -87,3 +87,12 @@ resource "aws_security_group_rule" "dynamo_db_sg_ingress" {
   source_security_group_id = aws_security_group.lambda_sg.id
   security_group_id        = aws_security_group.dynamo_db_sg.id
 }
+
+resource "aws_security_group_rule" "s3_sg_ingress" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.lambda_sg.id
+  security_group_id        = aws_security_group.s3_sg.id
+}

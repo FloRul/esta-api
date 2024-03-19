@@ -27,3 +27,9 @@ resource "aws_security_group" "dynamo_db_sg" {
   name   = "dynamo-db-sg-${var.environment}"
   vpc_id = module.vpc.vpc_id
 }
+
+resource "aws_security_group" "s3_sg" {
+  name   = "s3-sg-${var.environment}"
+  vpc_id = module.vpc.vpc_id
+
+}
