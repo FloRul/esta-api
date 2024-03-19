@@ -40,7 +40,8 @@ OBJECT_CREATED = "ObjectCreated"
 
 
 def get_vectorstore(collection_name: str):
-    return PGVectorStore.from_params(
+    logger.info(f"connecting to vectorstore for collection {collection_name}")
+    v = PGVectorStore.from_params(
         database=PGVECTOR_DATABASE,
         host=PGVECTOR_HOST,
         password=PGVECTOR_PASSWORD,
@@ -49,6 +50,8 @@ def get_vectorstore(collection_name: str):
         table_name=collection_name,
         embed_dim=1536,
     )
+    logger.info(f"connected to vectorstore for collection {collection_name}")
+    return v
 
 
 def fetch_file(bucket, key):
@@ -99,6 +102,7 @@ def lambda_handler(event, context):
                 )
 
                 nodes = pipeline.run(documents, num_workers=4)
+                logger.info(f"parsed {len(nodes)} nodes from {local_filename}")
 
                 vector_store = get_vectorstore(collection_name=bucket)
                 storage_context = StorageContext.from_defaults(
