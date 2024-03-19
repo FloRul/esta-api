@@ -74,6 +74,7 @@ def fetch_file(bucket, key):
 @logger.inject_lambda_context
 @tracer.capture_lambda_handler
 def lambda_handler(event, context):
+    logger.info(f"event: {event}")
     if "Records" in event and event["Records"]:
         records = json.loads(event["Records"][0]["body"])["Records"]
     else:
