@@ -66,4 +66,5 @@ module "recursive_indexer" {
   lambda_repository_name           = var.recursive_indexer_repository_name
   queue_visibility_timeout_seconds = local.lambda_timeout
   parsing_queue_arn                = module.raw_text_storage.parsing_queue_arn
+  raw_text_bucket_arn              = module.raw_text_storage.bucket_arn
 }

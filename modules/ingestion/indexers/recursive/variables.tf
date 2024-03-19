@@ -57,3 +57,8 @@ variable "parsing_queue_arn" {
   type     = string
   nullable = false
 }
+
+variable "raw_text_bucket_arn" {
+  type     = string
+  nullable = false
+}

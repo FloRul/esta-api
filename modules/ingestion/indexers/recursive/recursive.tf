@@ -115,6 +115,20 @@ module "recursive_indexer_lambda" {
         "sqs:ChangeMessageVisibility"
       ]
     }
+
+    s3 = {
+      effect = "Allow"
+
+      resources = [
+        var.raw_text_bucket_arn
+      ]
+
+      actions = [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ]
+    }
   }
 }
 
