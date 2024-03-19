@@ -124,3 +124,9 @@ resource "aws_lambda_event_source_mapping" "parsing_queue_trigger" {
   function_name    = module.recursive_indexer_lambda.lambda_function_name
   batch_size       = 10
 }
+
+resource "aws_lambda_function_event_invoke_config" "example" {
+  function_name                = module.recursive_indexer_lambda.lambda_function_name
+  maximum_event_age_in_seconds = 60
+  maximum_retry_attempts       = 0
+}

@@ -74,7 +74,6 @@ def lambda_handler(event, context):
     records = json.loads(event["Records"][0]["body"])["Records"]
     for record in records:
         eventName = record["eventName"]
-        print(f"eventName: {eventName}")
         try:
             bucket, key = record["s3"]["bucket"]["name"], record["s3"]["object"]["key"]
             logger.info(f"source_bucket: {bucket}, source_key: {key}")
