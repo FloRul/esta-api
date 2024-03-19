@@ -100,6 +100,19 @@ module "recursive_indexer_lambda" {
         "ec2:DeleteNetworkInterface"
       ]
     }
+
+    sqs = {
+      effect = "Allow"
+
+      resources = [
+        var.parsing_queue_arn
+      ]
+
+      actions = [
+        "sqs:SendMessage",
+        "sqs:ReceiveMessage",
+      ]
+    }
   }
 }
 

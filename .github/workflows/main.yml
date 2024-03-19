@@ -105,6 +105,8 @@ jobs:
     
     - name: Terraform Apply
       id: apply
+      env:
+        TF_LOG: WARN
       shell: bash
       run: |
         terraform apply -var-file="dev.tfvars" \
