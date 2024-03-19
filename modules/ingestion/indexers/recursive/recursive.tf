@@ -109,8 +109,10 @@ module "recursive_indexer_lambda" {
       ]
 
       actions = [
-        "sqs:SendMessage",
         "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:ChangeMessageVisibility"
       ]
     }
   }
