@@ -96,3 +96,12 @@ resource "aws_security_group_rule" "s3_sg_ingress" {
   source_security_group_id = aws_security_group.lambda_sg.id
   security_group_id        = aws_security_group.s3_sg.id
 }
+
+resource "aws_security_group_rule" "s3_sg_egress" {
+  type                     = "egress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.lambda_sg.id
+  security_group_id        = aws_security_group.s3_sg.id
+}

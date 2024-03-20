@@ -120,7 +120,8 @@ module "recursive_indexer_lambda" {
       effect = "Allow"
 
       resources = [
-        var.raw_text_bucket_arn
+        var.raw_text_bucket_arn,
+        "${var.raw_text_bucket_arn}/*"
       ]
 
       actions = [
