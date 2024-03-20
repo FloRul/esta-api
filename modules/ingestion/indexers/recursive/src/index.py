@@ -126,13 +126,14 @@ def lambda_handler(event, context):
                 logger.info(f"parsed {len(nodes)} nodes from {local_filename}")
 
                 vector_store = get_vectorstore(collection_name=bucket)
+                index = VectorStoreIndex(vector_store=vector_store)
                 storage_context = StorageContext.from_defaults(
                     vector_store=vector_store
                 )
 
                 logger.info(f"inserting {len(nodes)} nodes into {bucket} collection.")
 
-                VectorStoreIndex.insert_nodes(
+                index.insert_nodes(
                     nodes=nodes, storage_context=storage_context, show_progress=True
                 )
 
