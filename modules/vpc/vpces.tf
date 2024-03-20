@@ -59,11 +59,9 @@ resource "aws_vpc_endpoint" "dynamo_db" {
   route_table_ids   = module.vpc.public_route_table_ids
 }
 
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.${var.region}.s3"
-  vpc_endpoint_type   = "Interface"
-  private_dns_enabled = true
-  subnet_ids          = module.vpc.public_subnets
-  security_group_ids  = [aws_security_group.s3_sg.id]
+resource "aws_vpc_endpoint" "dynamo_db" {
+  vpc_id            = module.vpc.vpc_id
+  service_name      = "com.amazonaws.${var.region}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = module.vpc.public_route_table_ids
 }
