@@ -65,4 +65,5 @@ resource "aws_vpc_endpoint" "s3" {
   vpc_endpoint_type   = "Interface"
   route_table_ids     = module.vpc.public_route_table_ids
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.s3_sg.id]
 }
