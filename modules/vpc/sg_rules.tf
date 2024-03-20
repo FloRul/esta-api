@@ -70,6 +70,15 @@ resource "aws_security_group_rule" "lambda_sg_egress_sm" {
   security_group_id        = aws_security_group.lambda_sg.id
 }
 
+resource "aws_security_group_rule" "lambda_sg_egress_s3" {
+  type                     = "egress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "-1"
+  source_security_group_id = aws_security_group.s3_sg.id
+  security_group_id        = aws_security_group.lambda_sg.id
+}
+
 resource "aws_security_group_rule" "secret_manager_sg_ingress" {
   type                     = "ingress"
   from_port                = 443
