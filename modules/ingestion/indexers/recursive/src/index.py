@@ -6,11 +6,11 @@ from pathlib import Path
 from llama_index.vector_stores.postgres import PGVectorStore
 from llama_index.embeddings.bedrock import BedrockEmbedding
 from llama_index.core import VectorStoreIndex
-from llama_index.core import StorageContext
+from llama_index.core import StorageContext, ServiceContext
 from llama_index.core.node_parser import LangchainNodeParser
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.ingestion import IngestionPipeline
-
+from llama_index.core import Settings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from aws_lambda_powertools.utilities import parameters
@@ -29,7 +29,6 @@ metrics = Metrics()
 
 secret_name = os.environ.get("PGVECTOR_PASS_ARN")
 secret = json.loads(parameters.get_secret(name=secret_name, max_age=3600))
-
 
 PGVECTOR_HOST = os.environ.get("PGVECTOR_HOST", "localhost")
 PGVECTOR_PORT = int(os.environ.get("PGVECTOR_PORT", 5432))
@@ -126,9 +125,13 @@ def lambda_handler(event, context):
                 logger.info(f"parsed {len(nodes)} nodes from {local_filename}")
 
                 vector_store = get_vectorstore(collection_name=bucket)
-                index = VectorStoreIndex(vector_store=vector_store)
+                index = VectorStoreIndex(
+                    vector_store=vector_store,
+                    embed_model=BedrockEmbedding(),
+                )
+                
                 storage_context = StorageContext.from_defaults(
-                    vector_store=vector_store
+                    vector_store=vector_store,
                 )
 
                 logger.info(f"inserting {len(nodes)} nodes into {bucket} collection.")
