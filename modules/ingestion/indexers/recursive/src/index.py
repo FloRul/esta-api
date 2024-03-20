@@ -122,7 +122,7 @@ def lambda_handler(event, context):
                     ]
                 )
 
-                nodes = pipeline.run(documents, num_workers=4)
+                nodes = pipeline.run(documents)
                 logger.info(f"parsed {len(nodes)} nodes from {local_filename}")
 
                 vector_store = get_vectorstore(collection_name=bucket)
