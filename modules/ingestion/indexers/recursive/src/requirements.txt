@@ -1,5 +1,6 @@
 aws-lambda-powertools
 langchain-text-splitters
+langchain
 llama-index
 llama-index-vector-stores-postgres
 llama-index-embeddings-bedrock
