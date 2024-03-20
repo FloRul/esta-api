@@ -108,39 +108,39 @@ def lambda_handler(event, context):
 
                 logger.info(f"loaded {len(documents)} documents from {local_filename}")
 
-                pipeline = IngestionPipeline(
-                    transformations=[
-                        LangchainNodeParser(
-                            RecursiveCharacterTextSplitter(
-                                separators=["/n/n", "/n", ".", " "],
-                                chunk_size=512,
-                                chunk_overlap=100,
-                            ),
-                        ),
-                        BedrockEmbedding(),
-                    ]
+                parser = LangchainNodeParser(
+                    RecursiveCharacterTextSplitter(
+                        separators=["/n/n", "/n", ".", " "],
+                        chunk_size=512,
+                        chunk_overlap=100,
+                    ),
                 )
 
-                nodes = pipeline.run(documents)
-                logger.info(f"parsed {len(nodes)} nodes from {local_filename}")
+                base_nodes = parser.get_nodes_from_documents(documents=documents)
+
+                logger.info(f"parsed {len(base_nodes)} nodes from {local_filename}")
 
                 vector_store = get_vectorstore(collection_name=bucket)
                 index = VectorStoreIndex.from_vector_store(
                     vector_store=vector_store,
                     embed_model=BedrockEmbedding(),
                 )
-                
+
                 storage_context = StorageContext.from_defaults(
                     vector_store=vector_store,
                 )
 
-                logger.info(f"inserting {len(nodes)} nodes into {bucket} collection.")
-
-                index.insert_nodes(
-                    nodes=nodes, storage_context=storage_context, show_progress=True
+                logger.info(
+                    f"inserting {len(base_nodes)} nodes into {bucket} collection."
                 )
 
-                print(f"insertion complete. {len(nodes)} nodes inserted.")
+                index.insert_nodes(
+                    nodes=base_nodes,
+                    storage_context=storage_context,
+                    show_progress=True,
+                )
+
+                print(f"insertion complete. {len(base_nodes)} nodes inserted.")
                 return {"status": "success"}
         except Exception as e:
             logger.error(e)
