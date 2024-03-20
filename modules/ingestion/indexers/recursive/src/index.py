@@ -1,6 +1,7 @@
 import os
 import json
 import boto3
+from pathlib import Path
 
 from llama_index.vector_stores.postgres import PGVectorStore
 from llama_index.embeddings.bedrock import BedrockEmbedding
@@ -103,7 +104,8 @@ def lambda_handler(event, context):
                 logger.info(f"downloaded {key} from {bucket} to {local_filename}")
 
                 logger.info(f"loading documents from {local_filename}")
-                documents = SimpleDirectoryReader(local_filename).load_data()
+                local_directory = Path(local_filename).parent
+                documents = SimpleDirectoryReader(str(local_directory)).load_data()
 
                 logger.info(f"loaded {len(documents)} documents from {local_filename}")
 
