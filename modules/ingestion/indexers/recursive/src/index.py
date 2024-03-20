@@ -125,7 +125,7 @@ def lambda_handler(event, context):
                 logger.info(f"parsed {len(nodes)} nodes from {local_filename}")
 
                 vector_store = get_vectorstore(collection_name=bucket)
-                index = VectorStoreIndex(
+                index = VectorStoreIndex.from_vector_store(
                     vector_store=vector_store,
                     embed_model=BedrockEmbedding(),
                 )
