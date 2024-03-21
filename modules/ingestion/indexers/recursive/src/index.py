@@ -6,11 +6,9 @@ from pathlib import Path
 from llama_index.vector_stores.postgres import PGVectorStore
 from llama_index.embeddings.bedrock import BedrockEmbedding
 from llama_index.core import VectorStoreIndex
-from llama_index.core import StorageContext, ServiceContext
+from llama_index.core import StorageContext
 from llama_index.core.node_parser import LangchainNodeParser
 from llama_index.core import SimpleDirectoryReader
-from llama_index.core.ingestion import IngestionPipeline
-from llama_index.core import Settings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from aws_lambda_powertools.utilities import parameters
