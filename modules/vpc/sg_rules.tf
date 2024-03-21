@@ -52,6 +52,15 @@ resource "aws_security_group_rule" "bastion_sg_ingress_local" {
   security_group_id = aws_security_group.bastion_sg.id
 }
 
+resource "aws_security_group_rule" "bastion_sg_egress_all" {
+  type              = "egress"
+  from_port         = 5432
+  to_port           = 5432
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.bastion_sg.id
+}
+
 resource "aws_security_group_rule" "bastion_sg_egress_rds" {
   type                     = "egress"
   from_port                = 5432
