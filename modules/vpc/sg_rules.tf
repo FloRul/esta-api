@@ -25,6 +25,23 @@ resource "aws_security_group_rule" "database_sg_ingress_lambda" {
   security_group_id        = aws_security_group.database_sg.id
 }
 
+resource "aws_security_group_rule" "ssm_sg_ingress" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.ssm_sg.id
+}
+
+resource "aws_security_group_rule" "bastion_sg_egress_ssm" {
+  type                     = "egress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  source_security_group_id = aws_security_group.ssm_sg.id
+  security_group_id        = aws_security_group.bastion_sg.id
+}
 
 resource "aws_security_group_rule" "lambda_sg_egress_rds" {
   type                     = "egress"

@@ -12,7 +12,7 @@ resource "aws_vpc_endpoint" "ssm_endpoint" {
   vpc_id              = module.vpc.vpc_id
   service_name        = "com.amazonaws.${var.region}.ssm"
   vpc_endpoint_type   = "Interface"
-  security_group_ids  = [aws_security_group.bastion_sg.id]
+  security_group_ids  = [aws_security_group.ssm_sg.id]
   subnet_ids          = module.vpc.private_subnets
   private_dns_enabled = true
 }
@@ -21,7 +21,7 @@ resource "aws_vpc_endpoint" "ec2messages_endpoint" {
   vpc_id              = module.vpc.vpc_id
   vpc_endpoint_type   = "Interface"
   service_name        = "com.amazonaws.${var.region}.ec2messages"
-  security_group_ids  = [aws_security_group.bastion_sg.id]
+  security_group_ids  = [aws_security_group.ssm_sg.id]
   subnet_ids          = module.vpc.private_subnets
   private_dns_enabled = true
 }
@@ -30,7 +30,7 @@ resource "aws_vpc_endpoint" "ssmmessages_endpoint" {
   vpc_id              = module.vpc.vpc_id
   vpc_endpoint_type   = "Interface"
   service_name        = "com.amazonaws.${var.region}.ssmmessages"
-  security_group_ids  = [aws_security_group.bastion_sg.id]
+  security_group_ids  = [aws_security_group.ssm_sg.id]
   subnet_ids          = module.vpc.private_subnets
   private_dns_enabled = true
 }
