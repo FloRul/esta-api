@@ -16,6 +16,7 @@ resource "aws_vpc_endpoint" "ssm_endpoint" {
   subnet_ids          = module.vpc.private_subnets
   private_dns_enabled = true
 }
+
 resource "aws_vpc_endpoint" "ec2messages_endpoint" {
   vpc_id              = module.vpc.vpc_id
   vpc_endpoint_type   = "Interface"
