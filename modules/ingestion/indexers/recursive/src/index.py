@@ -109,6 +109,7 @@ def lambda_handler(event, context):
                 parser = LangchainNodeParser(
                     RecursiveCharacterTextSplitter(
                         separators=["/n/n", "/n", ".", " "],
+                        # TODO: make these configurable
                         chunk_size=512,
                         chunk_overlap=100,
                     ),
