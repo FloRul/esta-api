@@ -16,6 +16,15 @@ resource "aws_security_group_rule" "database_sg_ingress_bastion" {
   security_group_id        = aws_security_group.database_sg.id
 }
 
+resource "aws_security_group_rule" "database_sg_egress_bastion" {
+  type                     = "egress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.database_sg.id
+  security_group_id        = aws_security_group.bastion_sg.id
+}
+
 resource "aws_security_group_rule" "database_sg_ingress_lambda" {
   type                     = "ingress"
   from_port                = 5432
