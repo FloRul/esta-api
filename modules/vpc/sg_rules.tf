@@ -43,6 +43,15 @@ resource "aws_security_group_rule" "bastion_sg_egress_ssm" {
   security_group_id        = aws_security_group.bastion_sg.id
 }
 
+resource "aws_security_group_rule" "bastion_sg_egress_rds" {
+  type                     = "egress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.database_sg.id
+  security_group_id        = aws_security_group.bastion_sg.id
+}
+
 resource "aws_security_group_rule" "lambda_sg_egress_rds" {
   type                     = "egress"
   from_port                = 0
