@@ -30,7 +30,7 @@ resource "aws_security_group_rule" "bastion_sg_egress_ssm" {
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = ["75.152.59.245/32"]
   security_group_id = aws_security_group.bastion_sg.id
 }
 
@@ -39,7 +39,7 @@ resource "aws_security_group_rule" "bastion_sg_ingress_ssm" {
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = ["75.152.59.245/32"]
   security_group_id = aws_security_group.bastion_sg.id
 }
 
