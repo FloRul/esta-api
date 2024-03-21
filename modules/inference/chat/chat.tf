@@ -73,6 +73,18 @@ module "chat_inference_lambda" {
         "secretsmanager:GetSecretValue"
       ]
     }
+    
+    bedrock_usage = {
+      effect = "Allow"
+
+      resources = [
+        "*"
+      ]
+
+      actions = [
+        "bedrock:*"
+      ]
+    }
 
     rds_connect_read = {
       effect = "Allow"

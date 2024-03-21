@@ -87,6 +87,19 @@ module "recursive_indexer_lambda" {
         "rds-db:beginTransaction"
       ]
     }
+
+    bedrock_usage = {
+      effect = "Allow"
+
+      resources = [
+        "*"
+      ]
+
+      actions = [
+        "bedrock:*"
+      ]
+    }
+
     access_network_interface = {
       effect = "Allow"
 
