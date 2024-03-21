@@ -1,0 +1,1 @@
+aws ssm start-session --region us-east-1 --target i-096e30de0cca8b3fa --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters host="esta-vectorstore-id-dev.cva1glbvvfun.us-east-1.rds.amazonaws.com",portNumber="5432",localPortNumber="5432"
