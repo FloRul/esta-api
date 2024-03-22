@@ -92,7 +92,7 @@ resource "aws_security_group_rule" "allow_bastion_to_ssm" {
 }
 
 resource "aws_security_group_rule" "allow_ssm_inbound" {
-  type              = "inbound"
+  type              = "ingress"
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
