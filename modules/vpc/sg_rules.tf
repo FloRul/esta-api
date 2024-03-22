@@ -7,24 +7,6 @@ resource "aws_security_group_rule" "bedrock_sg_ingress" {
   security_group_id        = aws_security_group.bedrock_sg.id
 }
 
-resource "aws_security_group_rule" "database_sg_ingress_bastion" {
-  type                     = "ingress"
-  from_port                = 5432
-  to_port                  = 5432
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.bastion_sg.id
-  security_group_id        = aws_security_group.database_sg.id
-}
-
-resource "aws_security_group_rule" "database_sg_egress_bastion" {
-  type                     = "egress"
-  from_port                = 5432
-  to_port                  = 5432
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.database_sg.id
-  security_group_id        = aws_security_group.bastion_sg.id
-}
-
 resource "aws_security_group_rule" "database_sg_ingress_lambda" {
   type                     = "ingress"
   from_port                = 5432
@@ -32,60 +14,6 @@ resource "aws_security_group_rule" "database_sg_ingress_lambda" {
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.lambda_sg.id
   security_group_id        = aws_security_group.database_sg.id
-}
-
-resource "aws_security_group_rule" "ssm_sg_ingress" {
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ssm_sg.id
-}
-
-resource "aws_security_group_rule" "ssm_sg_ingress_5432" {
-  type              = "ingress"
-  from_port         = 5432
-  to_port           = 5432
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ssm_sg.id
-}
-
-resource "aws_security_group_rule" "ssm_sg_egress_5432" {
-  type              = "egress"
-  from_port         = 5432
-  to_port           = 5432
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ssm_sg.id
-}
-
-resource "aws_security_group_rule" "bastion_sg_egress_ssm" {
-  type                     = "egress"
-  from_port                = 0
-  to_port                  = 0
-  protocol                 = "-1"
-  source_security_group_id = aws_security_group.ssm_sg.id
-  security_group_id        = aws_security_group.bastion_sg.id
-}
-
-resource "aws_security_group_rule" "bastion_sg_ingress_local" {
-  type              = "ingress"
-  from_port         = 5432
-  to_port           = 5432
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.bastion_sg.id
-}
-
-resource "aws_security_group_rule" "bastion_sg_egress_all" {
-  type              = "egress"
-  from_port         = 5432
-  to_port           = 5432
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.bastion_sg.id
 }
 
 resource "aws_security_group_rule" "lambda_sg_egress_rds" {
@@ -131,4 +59,31 @@ resource "aws_security_group_rule" "dynamo_db_sg_ingress" {
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.lambda_sg.id
   security_group_id        = aws_security_group.dynamo_db_sg.id
+}
+
+resource "aws_security_group_rule" "bastion_to_rds" {
+  type                     = "ingress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.bastion_sg.id
+  source_security_group_id = aws_security_group.bastion_sg.id
+}
+
+resource "aws_security_group_rule" "ssm_to_bastion" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.bastion_sg.id
+  source_security_group_id = aws_security_group.ssm_sg.id
+}
+
+resource "aws_security_group_rule" "bastion_outbound" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.bastion_sg.id
+  cidr_blocks       = ["0.0.0.0/0"]
 }
