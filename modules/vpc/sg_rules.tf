@@ -91,7 +91,7 @@ resource "aws_security_group_rule" "allow_bastion_to_ssm" {
   source_security_group_id = aws_security_group.ssm_sg.id
 }
 
-resource "aws_security_group_rule" "allow_bastion_to_database" {
+resource "aws_security_group_rule" "allow_bastion_outbound_database" {
   type                     = "egress"
   from_port                = 5432
   to_port                  = 5432
