@@ -99,3 +99,12 @@ resource "aws_security_group_rule" "allow_ssm_inbound" {
   security_group_id = aws_security_group.ssm_sg.id
   cidr_blocks       = ["0.0.0.0/0"]
 }
+
+resource "aws_security_group_rule" "allow_ssm_outbound" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ssm_sg.id
+  source_security_group_id = aws_security_group.bastion_sg.id
+}
