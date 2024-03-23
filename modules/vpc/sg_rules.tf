@@ -110,7 +110,7 @@ resource "aws_security_group_rule" "allow_ssm_inbound" {
 }
 
 resource "aws_security_group_rule" "allow_ssm_outbound" {
-  type                     = "ingress"
+  type                     = "egress"
   from_port                = 443
   to_port                  = 443
   protocol                 = "tcp"
