@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from jinja2 import Template, Environment
 
 from retriever import Retriever
-from history import History
 
 from retriever import Retriever
 
@@ -56,9 +55,6 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
     try:
         inference = InferenceChat(**json.loads(event["body"]))
 
-        logger.info(f"loading history for session {inference.session_id}")
-        history = History(session_id=inference.session_id)
-
         # fetch documents
         retriever = Retriever(
             collection_name=inference.collection_name,
@@ -70,9 +66,8 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
         # get the template
         template = get_template(inference.template_id)
 
-        logger.info("fetching chat history...")
-        chat_history = history.get(limit=5)
-        chat_history.append(
+        messages = []
+        messages.append(
             {
                 "role": "user",
                 "content": [
