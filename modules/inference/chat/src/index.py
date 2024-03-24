@@ -1,10 +1,8 @@
 import json
 import os
 import boto3
-from aws_lambda_powertools.utilities import parameters
 from aws_lambda_powertools import Logger, Metrics, Tracer
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
-from aws_lambda_powertools.utilities.typing import LambdaContext
 from pydantic import BaseModel
 from jinja2 import Template, Environment
 
