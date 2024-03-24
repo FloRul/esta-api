@@ -1,10 +1,13 @@
 import os
 import json
 from aws_lambda_powertools.utilities import parameters
-from llama_index.core import VectorStoreIndex
+from llama_index.core import VectorStoreIndex, get_response_synthesizer
 from llama_index.vector_stores.postgres import PGVectorStore
 from llama_index.embeddings.bedrock import BedrockEmbedding
 from llama_index.core import ServiceContext, set_global_service_context
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.postprocessor import SimilarityPostprocessor
 
 
 # TODO: Create another user for the database for the read-only operations
@@ -36,18 +39,24 @@ class Retriever:
             embed_dim=1536,
         )
 
-        embedding_model = BedrockEmbedding()
         self._index = VectorStoreIndex.from_vector_store(
             vector_store=self._vector_store,
-            embed_model=embedding_model,
+            embed_model=BedrockEmbedding(),
         )
-        self._query_engine = self._index.as_query_engine(similarity_top_k=10)
+
+        self._retriever = VectorIndexRetriever(index=self._index, similarity_top_k=10)
+        # assemble query engine
+        self._query_engine = RetrieverQueryEngine(
+            retriever=self._retriever,
+            node_postprocessors=[
+                SimilarityPostprocessor(similarity_cutoff=relevance_treshold)
+            ],
+        )
 
     def fetch_documents(self, query: str):
         try:
             docs = self._query_engine.query(query)
-            
-            return [x for x in docs if x[1] > self._relevance_treshold]
+            return docs
         except Exception as e:
             print(f"Error while retrieving documents : {e}")
             raise e

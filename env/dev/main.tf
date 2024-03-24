@@ -149,7 +149,6 @@ module "vpc" {
   project_name = var.project_name
 }
 
-
 module "vectorstore" {
   source       = "../../modules/vectorstore"
   project_name = var.project_name

@@ -9,6 +9,9 @@ from pydantic import BaseModel
 from jinja2 import Template, Environment
 
 from retriever import Retriever
+from history import History
+
+from retriever import Retriever
 
 # Set up AWS Lambda Powertools
 tracer = Tracer()
@@ -16,10 +19,6 @@ logger = Logger()
 metrics = Metrics()
 
 dynamo = boto3.resource("dynamodb")
-
-secret_name = os.environ.get("PGVECTOR_PASS_ARN")
-secret = json.loads(parameters.get_secret(name=secret_name))
-
 template_table = dynamo.Table(os.environ.get("TEMPLATE_STORAGE_TABLE_NAME"))
 
 
@@ -27,53 +26,108 @@ class InferenceChat(BaseModel):
     session_id: str
     message: str
     template_id: str
-    collection_id: str
+    collection_name: str
 
 
 def get_template(template_id: str) -> str:
-    try:
-        # get the template from the database
-        t = template_table.get_item(Key={"id": template_id})["Item"]["template_text"]
-        if t is None:
-            return "{{ message }}\n\n{{ documents }}"
+    template = "{{system_prompt}}\n{{ documents }}"
+    if template_id:
+        response = template_table.get_item(Key={"id": template_id})
+        if "Item" in response:
+            template = response["Item"]["template_text"]
         else:
-            return t
-    except Exception as e:
-        logger.error(e)
-        return None
+            logger.error(
+                f"Template with id {template_id} not found, using default template"
+            )
+    else:
+        logger.warning("Template id not provided default template used")
+    return template
 
 
 @metrics.log_metrics
 @logger.inject_lambda_context
 @tracer.capture_lambda_handler
-def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
-    # Parse the body from the event
-    body = json.loads(event["body"])
-    inference_chat = InferenceChat(**body)
+def lambda_handler(event, context):
+    logger.info(str(event))
+    try:
+        inference = InferenceChat(**json.loads(event["body"]))
 
-    # Get the template
-    template = get_template(inference_chat.template_id)
+        logger.info(f"loading history for session {inference.session_id}")
+        history = History(session_id=inference.session_id)
 
-    # Get the retriever
-    retriever = Retriever(
-        collection_name=inference_chat.collection_id,
-        relevance_treshold=0.6,
-    )
-    documents = (retriever.fetch_documents(query=inference_chat.message),)
-    
-    return json.dumps(
-        {
-            "documents": documents,
-            "prompt": template,
-        }
-    )
-
-    if template:
-        t = Environment().from_string(template)
-        prompt = t.render(
-            message=inference_chat.message,
+        # fetch documents
+        retriever = Retriever(
+            collection_name=inference.collection_name,
+            relevance_treshold=os.environ.get("RELEVANCE_TRESHOLD", 0.6),
         )
-        return response
-    else:
-        return {"error": "Template not found"}
-    return []
+        docs = retriever.fetch_documents(query=inference.message)
+
+        # get the template
+        template = get_template(inference.template_id)
+
+        logger.info("fetching chat history...")
+        chat_history = history.get(limit=5)
+        chat_history.append(
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": inference.message,
+                    },
+                ],
+            }
+        )
+
+        # Render the template
+        template = Template(template).render(
+            system_prompt="",
+            documents=" ".join([doc[0].page_content for doc in docs]),
+        )
+
+        raw_response = invoke_model(
+            system_prompt=system_prompt,
+            source=source,
+            messages=chat_history,
+        )
+
+        response_dict = json.loads(raw_response)
+
+        # Extract the assistant's messages from the response
+        assistant_messages = [item["text"] for item in response_dict["content"]]
+        # Join all the assistant's messages into a single string
+        response = " ".join(assistant_messages)
+
+        # save the conversation history
+        history.add(
+            human_message=query, assistant_message=response, prompt=system_prompt
+        )
+        result = {
+            "completion": response,
+            "final_prompt": system_prompt,
+            "docs": json.dumps(
+                list(
+                    map(
+                        lambda x: {
+                            "content": x[0].page_content,
+                            "metadata": x[0].metadata,
+                            "score": x[1],
+                        },
+                        docs,
+                    )
+                )
+            ),
+        }
+        return {
+            "statusCode": 200,
+            "body": json.dumps(result),
+            "headers": HEADERS,
+            "isBase64Encoded": False,
+        }
+    except Exception as e:
+        print(e)
+        return {
+            "statusCode": 500,
+            "body": json.dumps(str(e)),
+            "headers": HEADERS,
+        }

@@ -4,16 +4,50 @@ import os
 import boto3
 from botocore.exceptions import ClientError
 
-# class 
 
 class History:
     def __init__(self, session_id: str):
         self._session_id = session_id
 
     def get(self, limit: int = 10):
+        result = []
         try:
-            
-            
+            payload = {
+                "session_id": self._session_id,
+                "limit": limit,
+            }
+            response = boto3.client("lambda").invoke(
+                FunctionName=os.environ.get("MEMORY_LAMBDA_NAME"),
+                InvocationType="RequestResponse",
+                Payload=json.dumps(payload),
+            )
+            body = json.loads(
+                json.loads(response["Payload"].read().decode("utf-8-sig"))["body"]
+            )
+            for x in body:
+                result.append(
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": x["HumanMessage"],
+                            },
+                        ],
+                    }
+                )
+                result.append(
+                    {
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": x["AssistantMessage"],
+                            },
+                        ],
+                    }
+                )
+            return result
         except ClientError as e:
             print("Error occurred: ", e.response["Error"]["Message"])
             return e.response["Error"]["Message"]
