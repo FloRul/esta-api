@@ -13,6 +13,12 @@ from history import History
 
 from retriever import Retriever
 
+HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "*",
+}
+
 # Set up AWS Lambda Powertools
 tracer = Tracer()
 logger = Logger()
@@ -47,7 +53,7 @@ def get_template(template_id: str) -> str:
 @metrics.log_metrics
 @logger.inject_lambda_context
 @tracer.capture_lambda_handler
-def lambda_handler(event, context):
+def lambda_handler(event: APIGatewayProxyEventV2, context):
     logger.info(str(event))
     try:
         inference = InferenceChat(**json.loads(event["body"]))
@@ -61,6 +67,7 @@ def lambda_handler(event, context):
             relevance_treshold=os.environ.get("RELEVANCE_TRESHOLD", 0.6),
         )
         docs = retriever.fetch_documents(query=inference.message)
+        logger.info(f"found {len(docs)} documents")
 
         # get the template
         template = get_template(inference.template_id)
@@ -80,47 +87,47 @@ def lambda_handler(event, context):
         )
 
         # Render the template
-        template = Template(template).render(
+        prompt = Template(template).render(
             system_prompt="",
             documents=" ".join([doc[0].page_content for doc in docs]),
         )
 
-        raw_response = invoke_model(
-            system_prompt=system_prompt,
-            source=source,
-            messages=chat_history,
-        )
+        # raw_response = invoke_model(
+        #     system_prompt=system_prompt,
+        #     source=source,
+        #     messages=chat_history,
+        # )
 
-        response_dict = json.loads(raw_response)
+        # response_dict = json.loads(raw_response)
 
-        # Extract the assistant's messages from the response
-        assistant_messages = [item["text"] for item in response_dict["content"]]
-        # Join all the assistant's messages into a single string
-        response = " ".join(assistant_messages)
+        # # Extract the assistant's messages from the response
+        # assistant_messages = [item["text"] for item in response_dict["content"]]
+        # # Join all the assistant's messages into a single string
+        # response = " ".join(assistant_messages)
 
-        # save the conversation history
-        history.add(
-            human_message=query, assistant_message=response, prompt=system_prompt
-        )
-        result = {
-            "completion": response,
-            "final_prompt": system_prompt,
-            "docs": json.dumps(
-                list(
-                    map(
-                        lambda x: {
-                            "content": x[0].page_content,
-                            "metadata": x[0].metadata,
-                            "score": x[1],
-                        },
-                        docs,
-                    )
-                )
-            ),
-        }
+        # # save the conversation history
+        # history.add(
+        #     human_message=query, assistant_message=response, prompt=system_prompt
+        # )
+        # result = {
+        #     "completion": response,
+        #     "final_prompt": system_prompt,
+        #     "docs": json.dumps(
+        #         list(
+        #             map(
+        #                 lambda x: {
+        #                     "content": x[0].page_content,
+        #                     "metadata": x[0].metadata,
+        #                     "score": x[1],
+        #                 },
+        #                 docs,
+        #             )
+        #         )
+        #     ),
+        # }
         return {
             "statusCode": 200,
-            "body": json.dumps(result),
+            "body": json.dumps(prompt),
             "headers": HEADERS,
             "isBase64Encoded": False,
         }
