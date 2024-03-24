@@ -53,7 +53,7 @@ def get_template(template_id: str) -> str:
 def lambda_handler(event: APIGatewayProxyEventV2, context):
     logger.info(str(event))
     try:
-        inference = InferenceChat(**json.loads(event["body"]))
+        inference = InferenceChat(**event["body"])
 
         # fetch documents
         retriever = Retriever(
