@@ -5,7 +5,7 @@ from aws_lambda_powertools import Logger, Metrics, Tracer
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 from pydantic import BaseModel
 from jinja2 import Template, Environment
-
+from typing import Optional
 from retriever import Retriever
 
 from retriever import Retriever
@@ -28,7 +28,7 @@ template_table = dynamo.Table(os.environ.get("TEMPLATE_STORAGE_TABLE_NAME"))
 class InferenceChat(BaseModel):
     session_id: str
     message: str
-    template_id: str
+    template_id: Optional[str] = None
     collection_name: str
 
 
