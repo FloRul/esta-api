@@ -7,15 +7,6 @@ resource "aws_security_group_rule" "bedrock_sg_ingress" {
   security_group_id        = aws_security_group.bedrock_sg.id
 }
 
-resource "aws_security_group_rule" "dynamo_db_sg_ingress" {
-  type                     = "ingress"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.lambda_sg.id
-  security_group_id        = aws_security_group.dynamo_db_sg.id
-}
-
 resource "aws_security_group_rule" "database_sg_ingress_lambda" {
   type                     = "ingress"
   from_port                = 5432

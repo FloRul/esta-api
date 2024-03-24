@@ -131,3 +131,12 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
             "body": json.dumps(str(e)),
             "headers": HEADERS,
         }
+
+
+# {
+#     "body": {
+#         "session_id": "aabbccdd",
+#         "message": "quel est l'objectif de l'appel d'offre",
+#         "collection_name": "esta-raw-text-storage-dev",
+#     }
+# }
