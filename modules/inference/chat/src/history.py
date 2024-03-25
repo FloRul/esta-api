@@ -15,7 +15,7 @@ class History:
         try:
             table = self._dynamodb.Table(os.getenv("HISTORY_STORAGE_TABLE_NAME"))
             response = table.query(
-                KeyConditionExpression=Key("SessionId").eq(self._session_id),
+                KeyConditionExpression=Key("PK").eq(self._session_id),
                 ScanIndexForward=False,
                 Limit=limit,
             )
@@ -49,9 +49,9 @@ class History:
 
     def add(self, human_message: str, assistant_message: str, prompt: str):
         try:
-            table = boto3.resource("dynamodb").Table(os.environ.get("DYNAMO_TABLE"))  # type: ignore
+            table = self._dynamodb.Table(os.environ.get("DYNAMO_TABLE"))  # type: ignore
             item = {
-                "SessionId": self._session_id,
+                "PK": self._session_id,
                 "HumanMessage": human_message,
                 "AssistantMessage": assistant_message,
                 "SK": str(time.time()),
