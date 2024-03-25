@@ -43,7 +43,7 @@ class Retriever:
         )
         self._embed_model = BedrockEmbedding()
 
-    def fetch_nodes(self, query: str):
+    def fetch_nodes(self, query: str) -> list[NodeWithScore]:
         try:
 
             query_embedding = self._embed_model.get_query_embedding(query=query)

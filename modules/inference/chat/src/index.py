@@ -8,6 +8,7 @@ from jinja2 import Template, Environment
 from typing import Optional
 from history import History
 from retriever import Retriever
+from llama_index.core.schema import NodeWithScore
 
 from retriever import Retriever
 
@@ -55,7 +56,7 @@ def invoke_model(
             ),
         )
 
-        res = response["body"].read().decode("utf-8")
+        res = json.loads(response["body"].read().decode("utf-8"))
         logger.info(f"Model response: {res}")
         return res
     except Exception as e:
@@ -125,36 +126,29 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
             messages=messages,
         )
 
-        # response_dict = json.loads(raw_response)
+        # Extract the assistant's messages from the response
+        assistant_messages = [item["text"] for item in bedrock_response["content"]]
+        # Join all the assistant's messages into a single string
+        response = " ".join(assistant_messages)
 
-        # # Extract the assistant's messages from the response
-        # assistant_messages = [item["text"] for item in response_dict["content"]]
-        # # Join all the assistant's messages into a single string
-        # response = " ".join(assistant_messages)
-
-        # # save the conversation history
-        # history.add(
-        #     human_message=query, assistant_message=response, prompt=system_prompt
-        # )
-        # result = {
-        #     "completion": response,
-        #     "final_prompt": system_prompt,
-        #     "docs": json.dumps(
-        #         list(
-        #             map(
-        #                 lambda x: {
-        #                     "content": x[0].page_content,
-        #                     "metadata": x[0].metadata,
-        #                     "score": x[1],
-        #                 },
-        #                 docs,
-        #             )
-        #         )
-        #     ),
-        # }
+        # save the conversation history
+        history.add(
+            human_message=inference.message,
+            assistant_message=response,
+            prompt=system_prompt,
+        )
         return {
             "statusCode": 200,
-            "body": json.dumps(system_prompt),
+            "body": json.dumps(
+                {
+                    "completion": response,
+                    "final_prompt": system_prompt,
+                    "docs": json.dumps(
+                        [node.dict() for node in nodes],
+                        default=lambda o: o.__dict__,
+                    ),
+                }
+            ),
             "headers": HEADERS,
             "isBase64Encoded": False,
         }
