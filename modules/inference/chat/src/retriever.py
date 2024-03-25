@@ -39,9 +39,15 @@ class Retriever:
             embed_dim=1536,
         )
 
+        embed_model = BedrockEmbedding()
+
         self._index = VectorStoreIndex.from_vector_store(
             vector_store=self._vector_store,
-            embed_model=BedrockEmbedding(),
+            embed_model=embed_model,
+            service_context=ServiceContext.from_defaults(
+                llm=None,
+                embed_model=embed_model,
+            ),
         )
 
         self._retriever = VectorIndexRetriever(index=self._index, similarity_top_k=10)
