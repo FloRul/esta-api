@@ -33,6 +33,10 @@ module "chat_inference_lambda" {
     PGVECTOR_PASS_ARN           = var.rds_instance_config.db_pass_secret_arn
     TEMPLATE_STORAGE_TABLE_NAME = var.dynamo_template_table_name
     HISTORY_STORAGE_TABLE_NAME  = var.dynamo_history_table_name
+
+    MAX_TOKENS  = 300
+    MODEL_ID    = "anthropic.claude-3-haiku-20240307-v1:0"
+    TEMPERATURE = 0.1
   }
 
   role_name                = "${local.lambda_function_name}-role"
@@ -73,7 +77,7 @@ module "chat_inference_lambda" {
         "secretsmanager:GetSecretValue"
       ]
     }
-    
+
     bedrock_usage = {
       effect = "Allow"
 

@@ -6,6 +6,7 @@ from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 from pydantic import BaseModel
 from jinja2 import Template, Environment
 from typing import Optional
+from modules.inference.chat.src.history import History
 from retriever import Retriever
 
 from retriever import Retriever
@@ -30,6 +31,36 @@ class InferenceChat(BaseModel):
     message: str
     template_id: Optional[str] = None
     collection_name: str
+
+
+def invoke_model(
+    system_prompt: str,
+    messages: list,
+):
+    try:
+        response = boto3.client("bedrock-runtime").invoke_model(
+            modelId=os.environ.get(
+                "MODEL_ID", "anthropic.claude-3-haiku-20240307-v1:0"
+            ),
+            accept="application/json",
+            contentType="application/json",
+            body=json.dumps(
+                {
+                    "anthropic_version": "bedrock-2023-05-31",
+                    "max_tokens": os.environ.get("MAX_TOKENS", 300),
+                    "temperature": os.environ.get("TEMPERATURE", 0.1),
+                    "system": system_prompt,
+                    "messages": messages,
+                }
+            ),
+        )
+
+        res = response["body"].read().decode("utf-8")
+        logger.info(f"Model response: {res}")
+        return res
+    except Exception as e:
+        print(f"Model invocation error : {e}")
+        raise e
 
 
 def get_template(template_id: str) -> str:
@@ -66,7 +97,10 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
         # get the template
         template = get_template(inference.template_id)
 
-        messages = []
+        # Prepare the chat history
+        history = History(session_id=inference.session_id)
+
+        messages = history.get()
         messages.append(
             {
                 "role": "user",
@@ -79,18 +113,17 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
             }
         )
 
+        logger.info(f"chat history : {messages}")
+
         # Render the template
-        prompt = Template(template).render(
-            system_prompt="",
-            documents=[],
-            # documents=" ".join([doc[0].page_content for doc in nodes]),
+        system_prompt = Template(template).render(
+            documents="\n".join([node.get_content() for node in nodes]),
         )
 
-        # raw_response = invoke_model(
-        #     system_prompt=system_prompt,
-        #     source=source,
-        #     messages=chat_history,
-        # )
+        bedrock_response = invoke_model(
+            system_prompt=system_prompt,
+            messages=messages,
+        )
 
         # response_dict = json.loads(raw_response)
 
@@ -121,7 +154,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
         # }
         return {
             "statusCode": 200,
-            "body": json.dumps(prompt),
+            "body": json.dumps(system_prompt),
             "headers": HEADERS,
             "isBase64Encoded": False,
         }

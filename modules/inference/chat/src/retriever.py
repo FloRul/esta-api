@@ -3,11 +3,8 @@ import json
 from aws_lambda_powertools.utilities import parameters
 from typing import Optional
 
-from llama_index.core import VectorStoreIndex
 from llama_index.vector_stores.postgres import PGVectorStore
 from llama_index.embeddings.bedrock import BedrockEmbedding
-from llama_index.core.query_engine import RetrieverQueryEngine
-from llama_index.core.postprocessor import SimilarityPostprocessor
 from llama_index.core.schema import NodeWithScore
 from llama_index.core.vector_stores import VectorStoreQuery
 
@@ -44,9 +41,7 @@ class Retriever:
             table_name=collection_name,
             embed_dim=1536,
         )
-
         self._embed_model = BedrockEmbedding()
-        # storage_context = StorageContext.from_defaults(vector_store=self)
 
     def fetch_nodes(self, query: str):
         try:
@@ -73,20 +68,3 @@ class Retriever:
         except Exception as e:
             print(f"Error while retrieving documents : {e}")
             raise e
-
-
-# def fetch_documents(self, query: str):
-#     try:
-
-#         query_embedding = self._embed_model.get_query_embedding(query=query)
-#         vector_store_query = VectorStoreQuery(
-#             query_embedding=query_embedding,
-#             similarity_top_k=10,
-#             mode=query_mode,
-#         )
-
-#         docs = self._query_engine.query(query)
-#         return docs
-#     except Exception as e:
-#         print(f"Error while retrieving documents : {e}")
-#         raise e

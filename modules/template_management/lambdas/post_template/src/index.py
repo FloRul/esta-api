@@ -68,11 +68,6 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
                 "statusCode": 400,
                 "body": "The template_text must contain {{documents}} variable",
             }
-        if "{{system_prompt}}" not in body["template_text"]:
-            return {
-                "statusCode": 400,
-                "body": "The template_text must contain {{system_prompt}} variable",
-            }
 
         body.pop("id", None)
         body.pop("creation_date", None)
