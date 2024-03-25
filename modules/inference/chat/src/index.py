@@ -64,7 +64,7 @@ def invoke_model(
 
 
 def get_template(template_id: str) -> str:
-    template = "{{system_prompt}}\n{{ documents }}"
+    template = "{{ documents }}"
     if template_id:
         response = template_table.get_item(Key={"id": template_id})
         if "Item" in response:
