@@ -1,13 +1,19 @@
 import os
 import json
 from aws_lambda_powertools.utilities import parameters
-from llama_index.core import VectorStoreIndex, get_response_synthesizer
+from typing import Optional
+
+from llama_index.core import VectorStoreIndex
 from llama_index.vector_stores.postgres import PGVectorStore
 from llama_index.embeddings.bedrock import BedrockEmbedding
-from llama_index.core import ServiceContext, set_global_service_context
-from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.postprocessor import SimilarityPostprocessor
+from llama_index.core.schema import NodeWithScore
+from llama_index.core.vector_stores import VectorStoreQuery
+
+query_mode = "default"
+# query_mode = "sparse"
+# query_mode = "hybrid"
 
 
 # TODO: Create another user for the database for the read-only operations
@@ -39,18 +45,13 @@ class Retriever:
             embed_dim=1536,
         )
 
-        embed_model = BedrockEmbedding()
+        self._embed_model = BedrockEmbedding()
 
         self._index = VectorStoreIndex.from_vector_store(
             vector_store=self._vector_store,
-            embed_model=embed_model,
-            service_context=ServiceContext.from_defaults(
-                llm=None,
-                embed_model=embed_model,
-            ),
+            embed_model=self._embed_model,
         )
-
-        self._retriever = VectorIndexRetriever(index=self._index, similarity_top_k=10)
+        # storage_context = StorageContext.from_defaults(vector_store=self)
         # assemble query engine
         self._query_engine = RetrieverQueryEngine(
             retriever=self._retriever,
@@ -59,10 +60,45 @@ class Retriever:
             ],
         )
 
-    def fetch_documents(self, query: str):
+    def fetch_nodes(self, query: str):
         try:
-            docs = self._query_engine.query(query)
-            return docs
+
+            query_embedding = self._embed_model.get_query_embedding(query=query)
+
+            vector_store_query = VectorStoreQuery(
+                query_embedding=query_embedding,
+                similarity_top_k=10,
+                mode=query_mode,
+            )
+
+            query_result = self._vector_store.query(vector_store_query)
+
+            nodes_with_scores = []
+
+            for index, node in enumerate(query_result.nodes):
+                score: Optional[float] = None
+                if query_result.similarities is not None:
+                    score = query_result.similarities[index]
+                nodes_with_scores.append(NodeWithScore(node=node, score=score))
+
+            return nodes_with_scores
         except Exception as e:
             print(f"Error while retrieving documents : {e}")
             raise e
+
+
+# def fetch_documents(self, query: str):
+#     try:
+
+#         query_embedding = self._embed_model.get_query_embedding(query=query)
+#         vector_store_query = VectorStoreQuery(
+#             query_embedding=query_embedding,
+#             similarity_top_k=10,
+#             mode=query_mode,
+#         )
+
+#         docs = self._query_engine.query(query)
+#         return docs
+#     except Exception as e:
+#         print(f"Error while retrieving documents : {e}")
+#         raise e

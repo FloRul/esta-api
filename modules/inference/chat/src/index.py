@@ -60,8 +60,8 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
             collection_name=inference.collection_name,
             relevance_treshold=os.environ.get("RELEVANCE_TRESHOLD", 0.6),
         )
-        docs = retriever.fetch_documents(query=inference.message)
-        logger.info(f"retrieval result : {docs}")
+        nodes = retriever.fetch_nodes(query=inference.message)
+        logger.info(f"retrieval result : {nodes}")
 
         # get the template
         template = get_template(inference.template_id)
@@ -82,7 +82,8 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
         # Render the template
         prompt = Template(template).render(
             system_prompt="",
-            documents=" ".join([doc[0].page_content for doc in docs]),
+            documents=[],
+            # documents=" ".join([doc[0].page_content for doc in nodes]),
         )
 
         # raw_response = invoke_model(
