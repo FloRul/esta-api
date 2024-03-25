@@ -56,7 +56,7 @@ def invoke_model(
             ),
         )
 
-        res = json.loads(response["body"].read().decode("utf-8"))
+        res = json.loads(response["body"].read().decode("utf-8-sig"))
         logger.info(f"Model response: {res}")
         return res
     except Exception as e:
