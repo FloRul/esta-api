@@ -61,7 +61,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
             relevance_treshold=os.environ.get("RELEVANCE_TRESHOLD", 0.6),
         )
         docs = retriever.fetch_documents(query=inference.message)
-        logger.info(f"found {len(docs)} documents")
+        logger.info(f"retrieval result : {docs}")
 
         # get the template
         template = get_template(inference.template_id)
