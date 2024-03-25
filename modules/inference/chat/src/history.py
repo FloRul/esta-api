@@ -49,7 +49,7 @@ class History:
 
     def add(self, human_message: str, assistant_message: str, prompt: str):
         try:
-            table = self._dynamodb.Table(os.environ.get("DYNAMO_TABLE"))  # type: ignore
+            table = self._dynamodb.Table(os.environ.get("HISTORY_STORAGE_TABLE_NAME"))  # type: ignore
             item = {
                 "PK": self._session_id,
                 "HumanMessage": human_message,

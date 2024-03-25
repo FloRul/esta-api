@@ -141,6 +141,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
             "statusCode": 200,
             "body": json.dumps(
                 {
+                    "session_id": inference.session_id,
                     "completion": response,
                     "final_prompt": system_prompt,
                     "docs": json.dumps(
