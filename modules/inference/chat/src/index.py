@@ -6,7 +6,7 @@ from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 from pydantic import BaseModel
 from jinja2 import Template, Environment
 from typing import Optional
-from modules.inference.chat.src.history import History
+from history import History
 from retriever import Retriever
 
 from retriever import Retriever
