@@ -57,7 +57,7 @@ module "get_templates" {
 module "delete_template" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = delete_template_lambda_function_name
+  function_name = local.delete_template_lambda_function_name
   handler       = "index.lambda_handler"
   runtime       = local.runtime
   publish       = true
