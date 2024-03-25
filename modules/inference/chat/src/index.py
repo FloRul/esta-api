@@ -47,8 +47,8 @@ def invoke_model(
             body=json.dumps(
                 {
                     "anthropic_version": "bedrock-2023-05-31",
-                    "max_tokens": os.environ.get("MAX_TOKENS", 300),
-                    "temperature": os.environ.get("TEMPERATURE", 0.1),
+                    "max_tokens": int(os.environ.get("MAX_TOKENS", 300)),
+                    "temperature": float(os.environ.get("TEMPERATURE", 0.1)),
                     "system": system_prompt,
                     "messages": messages,
                 }
