@@ -46,19 +46,7 @@ class Retriever:
         )
 
         self._embed_model = BedrockEmbedding()
-
-        self._index = VectorStoreIndex.from_vector_store(
-            vector_store=self._vector_store,
-            embed_model=self._embed_model,
-        )
         # storage_context = StorageContext.from_defaults(vector_store=self)
-        # assemble query engine
-        self._query_engine = RetrieverQueryEngine(
-            retriever=self._retriever,
-            node_postprocessors=[
-                SimilarityPostprocessor(similarity_cutoff=relevance_treshold)
-            ],
-        )
 
     def fetch_nodes(self, query: str):
         try:

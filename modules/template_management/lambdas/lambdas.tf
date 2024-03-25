@@ -1,12 +1,15 @@
 locals {
-  runtime              = "python3.11"
-  powertools_layer_arn = "arn:aws:lambda:${var.aws_region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:67"
+  runtime                              = "python3.11"
+  powertools_layer_arn                 = "arn:aws:lambda:${var.aws_region}:017000801446:layer:AWSLambdaPowertoolsPythonV2:67"
+  get_templates_lambda_function_name   = "${var.project_name}-get-templates-${var.environment}"
+  post_template_lambda_function_name   = "${var.project_name}-post-template-${var.environment}"
+  delete_template_lambda_function_name = "${var.project_name}-delete-template-${var.environment}"
 }
 
 module "get_templates" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = "${var.project_name}-get-templates-${var.environment}"
+  function_name = local.get_templates_lambda_function_name
   handler       = "index.lambda_handler"
   runtime       = local.runtime
   publish       = true
@@ -35,13 +38,26 @@ module "get_templates" {
         var.template_dynamo_table.arn,
       ]
     }
+
+    log_write = {
+      effect = "Allow"
+
+      resources = [
+        "arn:aws:logs:*:*:log-group:/aws/${local.get_templates_lambda_function_name}/*:*"
+      ]
+
+      actions = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ]
+    }
   }
 }
 
 module "delete_template" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = "${var.project_name}-delete-template-${var.environment}"
+  function_name = delete_template_lambda_function_name
   handler       = "index.lambda_handler"
   runtime       = local.runtime
   publish       = true
@@ -68,13 +84,25 @@ module "delete_template" {
         var.template_dynamo_table.arn,
       ]
     }
+    log_write = {
+      effect = "Allow"
+
+      resources = [
+        "arn:aws:logs:*:*:log-group:/aws/${local.delete_template_lambda_function_name}/*:*"
+      ]
+
+      actions = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ]
+    }
   }
 }
 
 module "post_template" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = "${var.project_name}-post-template-${var.environment}"
+  function_name = local.post_template_lambda_function_name
   handler       = "index.lambda_handler"
   runtime       = local.runtime
   publish       = true
@@ -101,6 +129,18 @@ module "post_template" {
       ]
       resources = [
         var.template_dynamo_table.arn,
+      ]
+    }
+    log_write = {
+      effect = "Allow"
+
+      resources = [
+        "arn:aws:logs:*:*:log-group:/aws/${local.post_template_lambda_function_name}/*:*"
+      ]
+
+      actions = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
       ]
     }
   }
