@@ -92,7 +92,10 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
             collection_name=inference.collection_name,
             relevance_treshold=os.environ.get("RELEVANCE_TRESHOLD", 0.6),
         )
-        nodes = retriever.fetch_nodes(query=inference.message)
+        nodes = retriever.fetch_nodes(
+            query=inference.message,
+            top_k=int(os.environ.get("TOP_K", 5)),
+        )
         logger.info(f"retrieval result : {nodes}")
 
         # get the template

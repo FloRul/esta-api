@@ -37,6 +37,7 @@ module "chat_inference_lambda" {
     MAX_TOKENS  = 300
     MODEL_ID    = "anthropic.claude-3-haiku-20240307-v1:0"
     TEMPERATURE = 0.1
+    TOP_K       = 20
   }
 
   role_name                = "${local.lambda_function_name}-role"

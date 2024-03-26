@@ -43,14 +43,14 @@ class Retriever:
         )
         self._embed_model = BedrockEmbedding()
 
-    def fetch_nodes(self, query: str) -> list[NodeWithScore]:
+    def fetch_nodes(self, query: str, top_k: int) -> list[NodeWithScore]:
         try:
 
             query_embedding = self._embed_model.get_query_embedding(query=query)
 
             vector_store_query = VectorStoreQuery(
                 query_embedding=query_embedding,
-                similarity_top_k=10,
+                similarity_top_k=top_k,
                 mode=query_mode,
             )
 
