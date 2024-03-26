@@ -84,25 +84,22 @@ module "esta_api" {
         },
         options = {
           "x-amazon-apigateway-integration" = {
-            type = "MOCK"
-            requestTemplates = {
-              "application/json" = "{\"statusCode\" : 200}"
-            }
+            type                                = "mock"
+            httpMethod                          = "OPTIONS"
+            passthroughBehavior                 = "when_no_match"
+            requestTemplates.application / json = "{\"statusCode\": 200}"
             responses = {
-              "default" = {
-                statusCode = "200"
-                responseTemplates = {
-                  "application/json" = "{}"
-                }
+              default = {
+                statusCode = 200
                 responseParameters = {
-                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                  "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,GET,POST,DELETE'",
                   "method.response.header.Access-Control-Allow-Origin"  = "'*'"
-                  "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,GET,PUT,POST,DELETE'"
                 }
               }
             }
           }
-        },
+        }
         post = {
           "x-amazon-apigateway-integration" = {
             uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.post_template_lambda_arn}/invocations"
