@@ -40,12 +40,11 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
         # Fetch all items from the table
         response = table.scan()
 
-        # Validate each item
-        templates = [Template.model_validate(item) for item in response["Items"]]
-
         return {
             "statusCode": 200,
-            "body": json.dumps([template.model_dump() for template in templates]),
+            "body": json.dumps(
+                [Template(**item).model_dump() for item in response["Items"]]
+            ),
         }
     except ValidationError as e:
         logger.exception(f"ValidationError: {e}")
