@@ -82,9 +82,29 @@ module "esta_api" {
           }
         },
         options = {
+          responses = {
+            "200" = {
+              description = "200 response"
+              headers     = {
+                "Access-Control-Allow-Headers" = {
+                  schema = {
+                    type = "string"
+                  }
+                }
+                "Access-Control-Allow-Methods" = {
+                  schema = {
+                    type = "string"
+                  }
+                }
+                "Access-Control-Allow-Origin" = {
+                  schema = {
+                    type = "string"
+                  }
+                }
+            }
+          },
           "x-amazon-apigateway-integration" = {
             type                = "mock"
-            httpMethod          = "OPTIONS"
             passthroughBehavior = "when_no_match"
             requestTemplates = {
               "application/json" = "{\"statusCode\": 200}"
