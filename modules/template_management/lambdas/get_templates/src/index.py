@@ -6,7 +6,6 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 
 from pydantic import BaseModel, ValidationError
-from datetime import date
 from typing import Dict
 
 # Set up AWS Lambda Powertools
