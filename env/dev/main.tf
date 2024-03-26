@@ -66,7 +66,6 @@ module "esta_api" {
   ]
 
   api_body = jsonencode({
-    swagger = "2.0",
     openapi = "3.0.1",
     info = {
       title   = "${var.project_name}-api-${var.environment}",
@@ -98,9 +97,23 @@ module "esta_api" {
                   "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,GET,POST,DELETE'",
                   "method.response.header.Access-Control-Allow-Origin"  = "'*'"
                 }
+                responseTemplates = {
+                  "application/json" = ""
+                }
               }
             }
           }
+          // Add method response for OPTIONS method
+          methodResponses = [
+            {
+              statusCode = "200"
+              responseParameters = {
+                "method.response.header.Access-Control-Allow-Headers" = true,
+                "method.response.header.Access-Control-Allow-Methods" = true,
+                "method.response.header.Access-Control-Allow-Origin"  = true
+              }
+            }
+          ]
         },
         post = {
           "x-amazon-apigateway-integration" = {
@@ -130,7 +143,6 @@ module "esta_api" {
         }
       }
     }
-
   })
 }
 
