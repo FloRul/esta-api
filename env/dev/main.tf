@@ -102,24 +102,24 @@ module "esta_api" {
                   }
                 }
               }
-            },
-            "x-amazon-apigateway-integration" = {
-              type                = "mock"
-              passthroughBehavior = "when_no_match"
-              requestTemplates = {
-                "application/json" = "{\"statusCode\": 200}"
-              }
-              responses = {
-                default = {
-                  statusCode = 200
-                  responseParameters = {
-                    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,GET,POST,DELETE'",
-                    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
-                  }
-                  responseTemplates = {
-                    "application/json" = ""
-                  }
+            }
+          },
+          "x-amazon-apigateway-integration" = {
+            type                = "mock"
+            passthroughBehavior = "when_no_match"
+            requestTemplates = {
+              "application/json" = "{\"statusCode\": 200}"
+            }
+            responses = {
+              default = {
+                statusCode = 200
+                responseParameters = {
+                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                  "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,GET,POST,DELETE'",
+                  "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+                }
+                responseTemplates = {
+                  "application/json" = ""
                 }
               }
             }
