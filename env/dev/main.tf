@@ -103,17 +103,19 @@ module "esta_api" {
               }
             }
           }
-          // Add method response for OPTIONS method
-          methodResponses = [
-            {
-              statusCode = "200"
-              responseParameters = {
-                "method.response.header.Access-Control-Allow-Headers" = true,
-                "method.response.header.Access-Control-Allow-Methods" = true,
-                "method.response.header.Access-Control-Allow-Origin"  = true
-              }
+        }
+
+        method_responses = {
+          "200" = {
+            response_parameters = {
+              "method.response.header.Access-Control-Allow-Headers" = true
+              "method.response.header.Access-Control-Allow-Methods" = true
+              "method.response.header.Access-Control-Allow-Origin"  = true
             }
-          ]
+            response_models = {
+              "application/json" = "Empty"
+            }
+          }
         },
         post = {
           "x-amazon-apigateway-integration" = {
