@@ -2,7 +2,7 @@ locals {
   lambda_function_name = "${var.project_name}-inference-chat-${var.environment}"
   runtime              = "python3.11"
   timeout              = 60
-  memory_size          = 256
+  memory_size          = 512
 }
 
 data "aws_ecr_image" "lambda_image" {
