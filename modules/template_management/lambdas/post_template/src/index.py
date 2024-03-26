@@ -63,7 +63,8 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
             return {"statusCode": 400, "body": f"Invalid Jinja template: {str(e)}"}
 
         # Check if {{documents}} is in template_text
-        if "{{documents}}" not in body["template_text"]:
+        template_text_stripped = "".join(body["template_text"].split())
+        if "{{documents}}" not in template_text_stripped:
             return {
                 "statusCode": 400,
                 "body": "The template_text must contain {{documents}} variable",
