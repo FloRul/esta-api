@@ -21,8 +21,8 @@ class Template(BaseModel):
     id: str
     creation_date: str
     updated_at: str
-    template_name: str
-    template_text: str
+    name: str
+    text: str
     tags: Dict[str, str]
 
 

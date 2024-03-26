@@ -69,7 +69,7 @@ def get_template(template_id: str) -> str:
     if template_id:
         response = template_table.get_item(Key={"id": template_id})
         if "Item" in response:
-            template = response["Item"]["template_text"]
+            template = response["Item"]["text"]
         else:
             logger.error(
                 f"Template with id {template_id} not found, using default template"
