@@ -99,7 +99,7 @@ module "esta_api" {
               }
             }
           }
-        }
+        },
         post = {
           "x-amazon-apigateway-integration" = {
             uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.post_template_lambda_arn}/invocations"
