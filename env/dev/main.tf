@@ -84,10 +84,12 @@ module "esta_api" {
         },
         options = {
           "x-amazon-apigateway-integration" = {
-            type                                = "mock"
-            httpMethod                          = "OPTIONS"
-            passthroughBehavior                 = "when_no_match"
-            requestTemplates.application / json = "{\"statusCode\": 200}"
+            type                = "mock"
+            httpMethod          = "OPTIONS"
+            passthroughBehavior = "when_no_match"
+            requestTemplates = {
+              "application/json" = "{\"statusCode\": 200}"
+            }
             responses = {
               default = {
                 statusCode = 200
