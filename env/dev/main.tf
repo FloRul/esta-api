@@ -85,7 +85,7 @@ module "esta_api" {
           responses = {
             "200" = {
               description = "200 response"
-              headers     = {
+              headers = {
                 "Access-Control-Allow-Headers" = {
                   schema = {
                     type = "string"
@@ -101,30 +101,30 @@ module "esta_api" {
                     type = "string"
                   }
                 }
-            }
-          },
-          "x-amazon-apigateway-integration" = {
-            type                = "mock"
-            passthroughBehavior = "when_no_match"
-            requestTemplates = {
-              "application/json" = "{\"statusCode\": 200}"
-            }
-            responses = {
-              default = {
-                statusCode = 200
-                responseParameters = {
-                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                  "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,GET,POST,DELETE'",
-                  "method.response.header.Access-Control-Allow-Origin"  = "'*'"
-                }
-                responseTemplates = {
-                  "application/json" = ""
+              }
+            },
+            "x-amazon-apigateway-integration" = {
+              type                = "mock"
+              passthroughBehavior = "when_no_match"
+              requestTemplates = {
+                "application/json" = "{\"statusCode\": 200}"
+              }
+              responses = {
+                default = {
+                  statusCode = 200
+                  responseParameters = {
+                    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,GET,POST,DELETE'",
+                    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+                  }
+                  responseTemplates = {
+                    "application/json" = ""
+                  }
                 }
               }
             }
           }
-        }
-
+        },
         method_responses = {
           "200" = {
             response_parameters = {
