@@ -94,6 +94,11 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
                     tags=body.get("tags", {}),
                 )
                 table.put_item(Item=template.model_dump())
+                return {
+                    "statusCode": 200,
+                    "headers": HEADERS,
+                    "body": json.dumps(template.model_dump(), cls=DateTimeEncoder),
+                }
             except Exception as e:
                 logger.exception(f"Failed to create item: {e}")
                 return {"statusCode": 500, "body": f"Failed to create item: {str(e)}"}
@@ -120,6 +125,21 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
                     },
                     ReturnValues="UPDATED_NEW",
                 )
+                return {
+                    "statusCode": 200,
+                    "headers": HEADERS,
+                    "body": json.dumps(
+                        {
+                            "id": id,
+                            "creation_date": creation_date,
+                            "updated_at": updated_at,
+                            "template_name": body.get("template_name", ""),
+                            "text": body.get("text", ""),
+                            "tags": body.get("tags", {}),
+                        },
+                        cls=DateTimeEncoder,
+                    ),
+                }
             except Exception as e:
                 logger.exception(f"Failed to update item: {e}")
                 return {"statusCode": 500, "body": f"Failed to update item: {str(e)}"}
