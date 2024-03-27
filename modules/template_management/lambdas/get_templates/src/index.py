@@ -8,6 +8,12 @@ from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 from pydantic import BaseModel, ValidationError
 from typing import Dict
 
+HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "*",
+}
+
 # Set up AWS Lambda Powertools
 tracer = Tracer()
 logger = Logger()
@@ -41,6 +47,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
 
         return {
             "statusCode": 200,
+            "headers": HEADERS,
             "body": json.dumps(
                 [Template(**item).model_dump() for item in response["Items"]]
             ),

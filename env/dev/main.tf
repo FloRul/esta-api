@@ -74,31 +74,6 @@ module "esta_api" {
     paths = {
       "/templates" = {
         get = {
-          responses = {
-            "200" = {
-              description = "200 response",
-              headers = {
-                "Access-Control-Allow-Origin" = {
-                  schema = {
-                    type = "string"
-                  },
-                  example = "*"
-                },
-                "Access-Control-Allow-Methods" = {
-                  schema = {
-                    type = "string"
-                  },
-                  example = "OPTIONS,GET,POST,DELETE"
-                },
-                "Access-Control-Allow-Headers" = {
-                  schema = {
-                    type = "string"
-                  },
-                  example = "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
-                }
-              }
-            }
-          },
           "x-amazon-apigateway-integration" = {
             uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.get_templates_lambda_arn}/invocations"
             passthroughBehavior = "when_no_templates"

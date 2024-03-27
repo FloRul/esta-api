@@ -15,6 +15,11 @@ tracer = Tracer()
 logger = Logger()
 metrics = Metrics()
 
+HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "*",
+}
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):
@@ -109,6 +114,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
             operation = "created"
 
         return {
+            "headers": HEADERS,
             "statusCode": 200,
             "body": json.dumps({"id": id, "operation": operation}, cls=DateTimeEncoder),
         }

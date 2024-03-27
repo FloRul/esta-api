@@ -5,6 +5,12 @@ from aws_lambda_powertools import Logger, Metrics, Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 
+HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "*",
+}
+
 # Set up AWS Lambda Powertools
 tracer = Tracer()
 logger = Logger()
@@ -32,9 +38,16 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
 
         # Check if item was deleted
         if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-            return {"statusCode": 200, "body": f"Successfully deleted item {id}"}
+            return {
+                "headers": HEADERS,
+                "statusCode": 200,
+                "body": f"Successfully deleted item {id}",
+            }
         else:
             return {"statusCode": 404, "body": f"Item {id} not found"}
     except ClientError as e:
         logger.exception(e.response["Error"]["Message"])
-        return {"statusCode": 500, "body": "An error occurred"}
+        return {
+            "statusCode": 500,
+            "body": "An error occurred",
+        }
