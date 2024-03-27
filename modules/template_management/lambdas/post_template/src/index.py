@@ -51,10 +51,11 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
 
     # Get the table
     table = dynamodb.Table(table_name)
-
     try:
         # Parse the body from the event
         body = json.loads(event["body"])
+
+        logger.info(f"Received body: {body}")
 
         # Generate the id, creation_date, last_updated, and name
         id = body.get("id", str(uuid.uuid4()))
@@ -75,11 +76,6 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
                 "body": "The text must contain {{documents}} variable",
             }
 
-        body.pop("id", None)
-        body.pop("creation_date", None)
-        body.pop("updated_at", None)
-        body.pop("name", None)
-        body.pop("tags", None)
         # Validate the data using the Template model
         template = Template(
             id=id,
