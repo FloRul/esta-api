@@ -2,8 +2,6 @@ import os
 import boto3
 import json
 from aws_lambda_powertools import Logger, Metrics, Tracer
-from aws_lambda_powertools.utilities.typing import LambdaContext
-from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 
 from pydantic import BaseModel, ValidationError
 from typing import Dict
@@ -34,7 +32,7 @@ class Template(BaseModel):
 @metrics.log_metrics
 @logger.inject_lambda_context
 @tracer.capture_lambda_handler
-def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
+def lambda_handler(event, context):
     # Get the table from environment variables
     table_name = os.environ["DYNAMODB_TABLE"]
 
