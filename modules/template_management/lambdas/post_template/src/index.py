@@ -87,9 +87,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
                     id=id,
                     creation_date=creation_date,
                     updated_at=updated_at,
-                    template_name=body.get(
-                        "template_name", "default"
-                    ),  # Change 'name' to 'template_name'
+                    template_name=body.get("template_name", "default"),
                     text=body.get("text", "{{documents}}"),
                     tags=body.get("tags", {}),
                 )
