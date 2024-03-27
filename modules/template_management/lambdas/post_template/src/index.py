@@ -34,7 +34,7 @@ class Template(BaseModel):
     id: str
     creation_date: str
     updated_at: str
-    name: str
+    template_name: str
     text: str
     tags: Dict[str, str]
 
@@ -87,7 +87,9 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
                     id=id,
                     creation_date=creation_date,
                     updated_at=updated_at,
-                    name=body.get("name", "default"),
+                    template_name=body.get(
+                        "template_name", "default"
+                    ),  # Change 'name' to 'template_name'
                     text=body.get("text", "{{documents}}"),
                     tags=body.get("tags", {}),
                 )
@@ -95,7 +97,6 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
             except Exception as e:
                 logger.exception(f"Failed to create item: {e}")
                 return {"statusCode": 500, "body": f"Failed to create item: {str(e)}"}
-
         else:
             id = body.get("id", None)
             updated_at = date.today().isoformat()
@@ -104,10 +105,16 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
             try:
                 table.update_item(
                     Key={"id": id},
-                    UpdateExpression="set updated_at=:ua, name=:n, text=:t, tags=:g",
+                    ExpressionAttributeNames={
+                        "#n": "template_name",
+                        "#t": "text",
+                        "#g": "tags",
+                        "#ua": "updated_at",
+                    },
+                    UpdateExpression="set #ua=:ua, #n=:n, #t=:t, #g=:g",
                     ExpressionAttributeValues={
                         ":ua": updated_at,
-                        ":n": body.get("name", ""),
+                        ":n": body.get("template_name", ""),
                         ":t": body.get("text", ""),
                         ":g": body.get("tags", []),
                     },
