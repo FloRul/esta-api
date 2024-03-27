@@ -7,7 +7,7 @@ from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 
 HEADERS = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE",
+    "Access-Control-Allow-Methods": "*",
     "Access-Control-Allow-Headers": "*",
 }
 

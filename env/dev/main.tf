@@ -115,7 +115,7 @@ module "esta_api" {
                 statusCode = 200
                 responseParameters = {
                   "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                  "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,GET,POST,DELETE'",
+                  "method.response.header.Access-Control-Allow-Methods" = "'GET, POST, OPTIONS'",
                   "method.response.header.Access-Control-Allow-Origin"  = "'*'"
                 }
                 responseTemplates = {
@@ -133,15 +133,71 @@ module "esta_api" {
             type                = "aws_proxy"
           }
         },
+      },
+      "/templates/{templateId}" = {
         delete = {
           "x-amazon-apigateway-integration" = {
             uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.delete_template_lambda_arn}/invocations"
-            passthroughBehavior = "when_no_templates"
+            passthroughBehavior = "when_no_match"
             httpMethod          = "POST"
             type                = "aws_proxy"
+          },
+          parameters = [
+            {
+              name     = "templateId"
+              in       = "path"
+              required = true
+              schema = {
+                type = "string"
+              }
+            }
+          ]
+        },
+        options = {
+          responses = {
+            "200" = {
+              description = "200 response"
+              headers = {
+                "Access-Control-Allow-Headers" = {
+                  schema = {
+                    type = "string"
+                  }
+                }
+                "Access-Control-Allow-Methods" = {
+                  schema = {
+                    type = "string"
+                  }
+                }
+                "Access-Control-Allow-Origin" = {
+                  schema = {
+                    type = "string"
+                  }
+                }
+              }
+            }
+          },
+          "x-amazon-apigateway-integration" = {
+            type                = "mock"
+            passthroughBehavior = "when_no_match"
+            requestTemplates = {
+              "application/json" = "{\"statusCode\": 200}"
+            }
+            responses = {
+              default = {
+                statusCode = 200
+                responseParameters = {
+                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                  "method.response.header.Access-Control-Allow-Methods" = "'DELETE'",
+                  "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+                }
+                responseTemplates = {
+                  "application/json" = ""
+                }
+              }
+            }
           }
-        }
-      },
+        },
+      }
       "/chat" = {
         post = {
           "x-amazon-apigateway-integration" = {
