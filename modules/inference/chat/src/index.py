@@ -92,11 +92,11 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
             collection_name=inference.collection_name,
             relevance_treshold=os.environ.get("RELEVANCE_TRESHOLD", 0.6),
         )
-        nodes = retriever.fetch_nodes(
+        nodes_with_score = retriever.fetch_nodes(
             query=inference.message,
             top_k=int(os.environ.get("TOP_K", 5)),
         )
-        logger.info(f"retrieval result : {nodes}")
+        logger.info(f"retrieval result : {nodes_with_score}")
 
         # get the template
         template = get_template(inference.template_id)
@@ -121,7 +121,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
 
         # Render the template
         system_prompt = Template(template).render(
-            documents="\n".join([node.get_content() for node in nodes]),
+            documents="\n".join([node.get_content() for node in nodes_with_score]),
         )
 
         bedrock_response = invoke_model(
@@ -148,7 +148,14 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
                     "completion": response,
                     "final_prompt": system_prompt,
                     "docs": json.dumps(
-                        [node.dict() for node in nodes],
+                        [
+                            {
+                                "metadata": n.node.metadata,
+                                "content": n.node.text,
+                                "score": n.score,
+                            }
+                            for n in nodes_with_score
+                        ],
                         default=lambda o: o.__dict__,
                     ),
                 }
