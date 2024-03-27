@@ -33,7 +33,7 @@ def lambda_handler(event, context):
 
     try:
         # Delete the item from DynamoDB
-        response = table.delete_item(Key={"PK": id})
+        response = table.delete_item(Key={"id": id})
 
         # Check if item was deleted
         if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
