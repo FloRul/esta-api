@@ -42,7 +42,7 @@ def lambda_handler(event, context):
                 "statusCode": 200,
             }
         else:
-            return {"statusCode": 404, "body": f"Item {id} not found"}
+            return {"statusCode": 404, "body": json.dumps(f"Item {id} not found")}
     except ClientError as e:
         logger.exception(e.response["Error"]["Message"])
         return {
