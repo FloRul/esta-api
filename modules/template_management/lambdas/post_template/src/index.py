@@ -54,7 +54,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
 
     try:
         # Parse the body from the event
-        body = event.body
+        body = json.loads(event["body"])
 
         # Generate the id, creation_date, last_updated, and name
         id = body.get("id", str(uuid.uuid4()))
