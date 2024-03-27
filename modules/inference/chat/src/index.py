@@ -66,7 +66,7 @@ def invoke_model(
 
 def get_template(template_id: str) -> str:
     template = "{{ documents }}"
-    if template_id:
+    if template_id and len(template_id) > 0:
         response = template_table.get_item(Key={"id": template_id})
         if "Item" in response:
             template = response["Item"]["text"]
