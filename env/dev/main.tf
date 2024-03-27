@@ -81,17 +81,20 @@ module "esta_api" {
                 "Access-Control-Allow-Origin" = {
                   schema = {
                     type = "string"
-                  }
+                  },
+                  example = "*"
                 },
                 "Access-Control-Allow-Methods" = {
                   schema = {
                     type = "string"
-                  }
+                  },
+                  example = "OPTIONS,GET,POST,DELETE"
                 },
                 "Access-Control-Allow-Headers" = {
                   schema = {
                     type = "string"
-                  }
+                  },
+                  example = "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
                 }
               }
             }
