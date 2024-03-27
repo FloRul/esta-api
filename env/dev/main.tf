@@ -206,7 +206,51 @@ module "esta_api" {
             httpMethod          = "POST"
             type                = "aws_proxy"
           }
-        }
+        },
+        options = {
+          responses = {
+            "200" = {
+              description = "200 response"
+              headers = {
+                "Access-Control-Allow-Headers" = {
+                  schema = {
+                    type = "string"
+                  }
+                }
+                "Access-Control-Allow-Methods" = {
+                  schema = {
+                    type = "string"
+                  }
+                }
+                "Access-Control-Allow-Origin" = {
+                  schema = {
+                    type = "string"
+                  }
+                }
+              }
+            }
+          },
+          "x-amazon-apigateway-integration" = {
+            type                = "mock"
+            passthroughBehavior = "when_no_match"
+            requestTemplates = {
+              "application/json" = "{\"statusCode\": 200}"
+            }
+            responses = {
+              default = {
+                statusCode = 200
+                responseParameters = {
+                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                  "method.response.header.Access-Control-Allow-Methods" = "'POST, OPTIONS'",
+                  "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+                }
+                responseTemplates = {
+                  "application/json" = ""
+                }
+              }
+            }
+          }
+        },
       }
     }
   })
