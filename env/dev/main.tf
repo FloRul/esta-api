@@ -134,7 +134,7 @@ module "esta_api" {
           }
         },
       },
-      "/templates/{templateId}" = {
+      "/templates/{id}" = {
         delete = {
           "x-amazon-apigateway-integration" = {
             uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.delete_template_lambda_arn}/invocations"
@@ -144,7 +144,7 @@ module "esta_api" {
           },
           parameters = [
             {
-              name     = "templateId"
+              name     = "id"
               in       = "path"
               required = true
               schema = {
