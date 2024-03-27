@@ -27,7 +27,7 @@ def lambda_handler(event, context):
 
     # Get the id from the event
     id = event["pathParameters"]["id"]
-
+    logger.info(f"Deleting item {id} from table {table_name}")
     # Get the table
     table = dynamodb.Table(table_name)
 
@@ -40,6 +40,7 @@ def lambda_handler(event, context):
             return {
                 "headers": HEADERS,
                 "statusCode": 200,
+                "body": json.dumps(f"Item {id} deleted successfully"),
             }
         else:
             return {"statusCode": 404, "body": json.dumps(f"Item {id} not found")}
