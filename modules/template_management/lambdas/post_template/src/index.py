@@ -105,20 +105,23 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
         else:
             id = body.get("id", None)
             updated_at = date.today().isoformat()
+            creation_date = body.get("creation_date", None)
 
             # Update existing item
             try:
                 table.update_item(
                     Key={"id": id},
                     ExpressionAttributeNames={
+                        "#cd": "creation_date",
                         "#n": "template_name",
                         "#t": "text",
                         "#g": "tags",
                         "#ua": "updated_at",
                     },
-                    UpdateExpression="set #ua=:ua, #n=:n, #t=:t, #g=:g",
+                    UpdateExpression="set #ua=:ua, #n=:n, #t=:t, #g=:g, #cd=:cd",
                     ExpressionAttributeValues={
                         ":ua": updated_at,
+                        ":cd": creation_date,
                         ":n": body.get("template_name", ""),
                         ":t": body.get("text", ""),
                         ":g": body.get("tags", []),
