@@ -21,6 +21,7 @@ HEADERS = {
     "Access-Control-Allow-Headers": "*",
 }
 
+
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, date):
@@ -53,17 +54,16 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
 
     try:
         # Parse the body from the event
-        body = json.loads(event["body"])
+        body = json.loads(event.body)
 
         # Generate the id, creation_date, last_updated, and name
         id = body.get("id", str(uuid.uuid4()))
         creation_date = date.today().isoformat()
         updated_at = date.today().isoformat()
-        name = "Generated name"
 
         # Validate the Jinja template
         try:
-            Environment().parse(body["text"])
+            Environment().parse(body.get("text", ""))
         except TemplateSyntaxError as e:
             return {"statusCode": 400, "body": f"Invalid Jinja template: {str(e)}"}
 
@@ -85,8 +85,6 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
             id=id,
             creation_date=creation_date,
             updated_at=updated_at,
-            name=name,
-            tags=body.get("tags", {}),
             **body,
         )
 
@@ -101,7 +99,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
                 ExpressionAttributeValues={
                     ":d": creation_date,
                     ":ua": updated_at,
-                    ":n": name,
+                    ":n": template.name,
                     ":t": template.text,
                     ":g": template.tags,
                 },
@@ -110,13 +108,19 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
             operation = "updated"
         else:
             # Item doesn't exist, create it
-            table.put_item(Item=template.dict())
+            table.put_item(Item=template.model_dump())
             operation = "created"
 
         return {
             "headers": HEADERS,
             "statusCode": 200,
-            "body": json.dumps({"id": id, "operation": operation}, cls=DateTimeEncoder),
+            "body": json.dumps(
+                {
+                    "id": id,
+                    "operation": operation,
+                },
+                cls=DateTimeEncoder,
+            ),
         }
     except ValidationError as e:
         logger.exception(f"ValidationError: {e}")

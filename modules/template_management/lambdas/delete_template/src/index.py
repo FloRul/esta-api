@@ -27,7 +27,7 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
     table_name = os.environ["DYNAMODB_TABLE"]
 
     # Get the id from the event
-    id = event["pathParameters"]["id"]
+    id = event.path_parameters.get("id")
 
     # Get the table
     table = dynamodb.Table(table_name)
