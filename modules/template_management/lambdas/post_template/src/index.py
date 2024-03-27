@@ -72,11 +72,13 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
         try:
             Environment().parse(body.get("text", ""))
         except TemplateSyntaxError as e:
+            logger.exception(f"TemplateSyntaxError: {e}")
             return {"statusCode": 400, "body": f"Invalid Jinja template: {str(e)}"}
 
         # Check if {{documents}} is in text
         text_stripped = "".join(body.get("text", "").split())
         if "{{documents}}" not in text_stripped:
+            logger.exception("The text must contain {{documents}} variable")
             return {
                 "statusCode": 400,
                 "body": "The text must contain {{documents}} variable",
@@ -91,12 +93,14 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
                 **body,
             )
         except ValidationError as e:
+            logger.exception(f"ValidationError: {e}")
             return {"statusCode": 400, "body": f"Invalid template data: {str(e)}"}
 
         # Check if item exists
         try:
             response = table.get_item(Key={"id": id})
         except Exception as e:
+            logger.exception(f"Exception: {e}")
             return {"statusCode": 500, "body": f"Failed to get item: {str(e)}"}
 
         if "Item" in response:
@@ -114,6 +118,8 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
                     },
                 )
             except Exception as e:
+                logger.exception(f"Exception: {e}")
                 return {"statusCode": 500, "body": f"Failed to update item: {str(e)}"}
     except Exception as e:
+        logger.exception(f"Exception: {e}")
         return {"statusCode": 500, "body": f"An unexpected error occurred: {str(e)}"}
