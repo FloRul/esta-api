@@ -59,29 +59,28 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
 
         creating = body.get("id", None) is None
 
+        # Validate the Jinja template
+        try:
+            Environment().parse(body.get("text", ""))
+        except TemplateSyntaxError as e:
+            logger.exception(f"TemplateSyntaxError: {e}")
+            return {"statusCode": 400, "body": f"Invalid Jinja template: {str(e)}"}
+
+        # Check if {{documents}} is in text
+        text_stripped = "".join(body.get("text", "").split())
+        if "{{documents}}" not in text_stripped:
+            logger.exception("The text must contain {{documents}} variable")
+            return {
+                "statusCode": 400,
+                "body": "The text must contain {{documents}} variable",
+            }
+
         # Generate the id, creation_date, last_updated, and name
         if creating:
             id = str(uuid.uuid4())
             creation_date = date.today().isoformat()
             updated_at = date.today().isoformat()
 
-            # Validate the Jinja template
-            try:
-                Environment().parse(body.get("text", ""))
-            except TemplateSyntaxError as e:
-                logger.exception(f"TemplateSyntaxError: {e}")
-                return {"statusCode": 400, "body": f"Invalid Jinja template: {str(e)}"}
-
-            # Check if {{documents}} is in text
-            text_stripped = "".join(body.get("text", "").split())
-            if "{{documents}}" not in text_stripped:
-                logger.exception("The text must contain {{documents}} variable")
-                return {
-                    "statusCode": 400,
-                    "body": "The text must contain {{documents}} variable",
-                }
-
-            # Create new item code here
             # Create new item
             try:
                 template = Template(
@@ -100,22 +99,6 @@ def lambda_handler(event: APIGatewayProxyEventV2, context: LambdaContext):
         else:
             id = body.get("id", None)
             updated_at = date.today().isoformat()
-
-            # Validate the Jinja template
-            try:
-                Environment().parse(body.get("text", ""))
-            except TemplateSyntaxError as e:
-                logger.exception(f"TemplateSyntaxError: {e}")
-                return {"statusCode": 400, "body": f"Invalid Jinja template: {str(e)}"}
-
-            # Check if {{documents}} is in text
-            text_stripped = "".join(body.get("text", "").split())
-            if "{{documents}}" not in text_stripped:
-                logger.exception("The text must contain {{documents}} variable")
-                return {
-                    "statusCode": 400,
-                    "body": "The text must contain {{documents}} variable",
-                }
 
             # Update existing item
             try:
