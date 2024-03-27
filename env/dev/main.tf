@@ -125,18 +125,6 @@ module "esta_api" {
             }
           }
         },
-        method_responses = {
-          "200" = {
-            response_parameters = {
-              "method.response.header.Access-Control-Allow-Headers" = true
-              "method.response.header.Access-Control-Allow-Methods" = true
-              "method.response.header.Access-Control-Allow-Origin"  = true
-            }
-            response_models = {
-              "application/json" = "Empty"
-            }
-          }
-        },
         post = {
           "x-amazon-apigateway-integration" = {
             uri                 = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${module.template_management.post_template_lambda_arn}/invocations"
