@@ -114,7 +114,7 @@ module "esta_api" {
               default = {
                 statusCode = 200
                 responseParameters = {
-                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token, X-Session-Id'",
                   "method.response.header.Access-Control-Allow-Methods" = "'GET, POST, OPTIONS'",
                   "method.response.header.Access-Control-Allow-Origin"  = "'*'"
                 }
@@ -186,7 +186,7 @@ module "esta_api" {
               default = {
                 statusCode = 200
                 responseParameters = {
-                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token, X-Session-Id'",
                   "method.response.header.Access-Control-Allow-Methods" = "'DELETE'",
                   "method.response.header.Access-Control-Allow-Origin"  = "'*'"
                 }
@@ -240,7 +240,7 @@ module "esta_api" {
               default = {
                 statusCode = 200
                 responseParameters = {
-                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                  "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token, X-Session-Id'",
                   "method.response.header.Access-Control-Allow-Methods" = "'POST, OPTIONS'",
                   "method.response.header.Access-Control-Allow-Origin"  = "'*'"
                 }
