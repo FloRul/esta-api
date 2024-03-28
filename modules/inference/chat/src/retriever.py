@@ -63,7 +63,7 @@ class Retriever:
                 for index, (node, score) in enumerate(
                     zip(query_result.nodes, query_result.similarities or [])
                 )
-                if score[0] is not None and score[0] >= self._relevance_treshold
+                if score[0] is not None and score >= self._relevance_treshold
             ]
 
             return nodes_with_scores
