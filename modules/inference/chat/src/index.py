@@ -83,9 +83,9 @@ def get_template(template_id: str) -> str:
 @logger.inject_lambda_context
 @tracer.capture_lambda_handler
 def lambda_handler(event: APIGatewayProxyEventV2, context):
-    logger.info(str(event))
+    logger.info(event)
     try:
-        inference = InferenceChat(**json.loads(event["body"]))
+        inference = InferenceChat(session_id=event["headers"]["x-session-id"],**json.loads(event["body"]))
 
         # fetch documents
         retriever = Retriever(
