@@ -4,12 +4,11 @@ import boto3
 from aws_lambda_powertools import Logger, Metrics, Tracer
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEventV2
 from pydantic import BaseModel
-from jinja2 import Template, Environment
+from jinja2 import Template
 from typing import Optional
 from history import History
 from retriever import Retriever
-from llama_index.core.schema import NodeWithScore
-
+import uuid
 from retriever import Retriever
 
 HEADERS = {
@@ -141,6 +140,8 @@ def lambda_handler(event: APIGatewayProxyEventV2, context):
             human_message=inference.message,
             assistant_message=response,
             prompt=system_prompt,
+            template_id=inference.template_id,
+            message_id=uuid.uuid4().hex,
         )
         return {
             "statusCode": 200,
