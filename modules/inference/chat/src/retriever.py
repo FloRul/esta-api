@@ -63,10 +63,10 @@ class Retriever:
                 for index, (node, score) in enumerate(
                     zip(query_result.nodes, query_result.similarities or [])
                 )
-                if score[0] is not None and score >= self._relevance_treshold
+                if score is not None and score >= self._relevance_treshold
             ]
 
             return nodes_with_scores
         except Exception as e:
             print(f"Error while retrieving documents : {e}")
-            raise e
+            return []
