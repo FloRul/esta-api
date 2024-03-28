@@ -85,12 +85,14 @@ def get_template(template_id: str) -> str:
 def lambda_handler(event: APIGatewayProxyEventV2, context):
     logger.info(event)
     try:
-        inference = InferenceChat(session_id=event["headers"]["x-session-id"],**json.loads(event["body"]))
+        inference = InferenceChat(
+            session_id=event["headers"]["x-session-id"], **json.loads(event["body"])
+        )
 
         # fetch documents
         retriever = Retriever(
             collection_name=inference.collection_name,
-            relevance_treshold=os.environ.get("RELEVANCE_TRESHOLD", 0.6),
+            relevance_treshold=float(os.environ.get("RELEVANCE_TRESHOLD", 0.6)),
         )
         nodes_with_score = retriever.fetch_nodes(
             query=inference.message,

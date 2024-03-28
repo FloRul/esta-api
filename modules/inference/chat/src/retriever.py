@@ -58,11 +58,13 @@ class Retriever:
 
             nodes_with_scores = []
 
-            for index, node in enumerate(query_result.nodes):
-                score: Optional[float] = None
-                if query_result.similarities is not None:
-                    score = query_result.similarities[index]
-                nodes_with_scores.append(NodeWithScore(node=node, score=score))
+            nodes_with_scores = [
+                NodeWithScore(node=node, score=score)
+                for (node, score) in enumerate(
+                    zip(query_result.nodes, query_result.similarities or [])
+                )
+                if score is not None and score >= self._relevance_treshold
+            ]
 
             return nodes_with_scores
         except Exception as e:
