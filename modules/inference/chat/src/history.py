@@ -47,7 +47,14 @@ class History:
             print(f"An error occurred: {e}")
         return result
 
-    def add(self, human_message: str, assistant_message: str, prompt: str):
+    def add(
+        self,
+        human_message: str,
+        assistant_message: str,
+        prompt: str,
+        template_id: str,
+        message_id: str,
+    ):
         try:
             table = self._dynamodb.Table(os.environ.get("HISTORY_STORAGE_TABLE_NAME"))  # type: ignore
             item = {
@@ -56,6 +63,7 @@ class History:
                 "AssistantMessage": assistant_message,
                 "SK": str(time.time()),
                 "Prompt": prompt,
+                "TemplateId": template_id,
             }
             table.put_item(Item=item)
             return item
